@@ -8,6 +8,21 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+Get matched pairs in FHHC data
+```{r}
+head(FHHC)
+dim(FHHC)
+FHHC = FHHC[order(FHHC$ConsumerID),]
+head(FHHC)
+FHHC_base = subset(FHHC, FHHC$InterviewType_07 == 1)
+head(FHHC_base)
+FHHC_Month6 = subset(FHHC, FHHC$InterviewType_07 == 3)
+dim(FHHC_Month6)
+FHHC_wide = merge(FHHC_base, FHHC_Month6, by = "ConsumerID", all.y = TRUE)
+dim(FHHC_wide)
+FHHC_wide$ConsumerID == FHHC_Month6$ConsumerID
+```
+
 FHHC
 ```{r}
 library(prettyR)
