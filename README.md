@@ -83,7 +83,7 @@ mean(FHHC$NightsHospitalMHC)
 Average days using alcohol
 ```{r}
 mean(FHHC$Alcohol_Use)
-
+d
 
 ```
 
