@@ -1,29 +1,44 @@
 ---
 title: "FHHC Report"
-output:
-  pdf_document: default
-  html_document: default
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-```
-Get matched pairs in FHHC data
-```{r}
-head(FHHC)
+
+
+library(prettyR)
+library(psych)
+
+#setwd("S:/Indiana Research & Evaluation/FHHC Homelessness/Data and QPR")
+#base = read.csv("FHHC_base.csv", header = TRUE, na.strings = c(-99, -98, -97))
+#month6 = read.csv("FHHC_Month6.csv", header = TRUE, na.string = c(-99, -98, -97))
+#FHHC = read.csv("FHHC.csv", header = TRUE, na.string = c(-99, -98, -97, -1, -4, -5, -7, -9, -2, -6 -8))
+
+#Get matched pairs in FHHC data
+
 dim(FHHC)
 FHHC = FHHC[order(FHHC$ConsumerID),]
-head(FHHC)
 FHHC_base = subset(FHHC, FHHC$InterviewType_07 == 1)
-head(FHHC_base)
 FHHC_Month6 = subset(FHHC, FHHC$InterviewType_07 == 3)
 dim(FHHC_Month6)
 FHHC_wide = merge(FHHC_base, FHHC_Month6, by = "ConsumerID", all.y = TRUE)
 dim(FHHC_wide)
 FHHC_wide$ConsumerID == FHHC_Month6$ConsumerID
-```
+### Subset RedCap data
+library(lubridate)
+#base$audit_timestamp = mdy(base$audit_timestamp)
+#base$audit_timestampTest = gsub(base$audit_timestamp, "\\s", "")
 
-FHHC
+
+redcap = merge(base, month6, by = "record_id", all.y = TRUE)
+redcap$audit_timestamp.xTest = gsub(redcap$audit_timestamp.x, "\\s", "")
+head(redcap)
+base$audit_timestamp
+dim(redcap)
+head(redcap)
+```
+Descriptives
 ```{r}
 library(prettyR)
 #1 = male; 2 = female
@@ -50,59 +65,47 @@ describe.factor(FHHC$Education)
 #12 = Age 95 years or older
 describe.factor(FHHC$Agegroup)
 mean(FHHC$Agegroup)
-44-((44-35)*.75)
-```
-Diagnosis  FHHC$DiagnosisOne
-```{r}
-Diagnosis = data.frame(DiagnosisOne = FHHC$DiagnosisOne, DiagnosisTwo = FHHC$DiagnosisTwo, DiagnosisThree = FHHC$DiagnosisThree)
-apply(Diagnosis, 2, function(x){describe.factor(x)})
-```
-Centerstone Metrics
-little_interest_or_pleasur	feeling_down_depressed_or	trouble_falling_or_staying	feeling_tired_or_having_li	poor_appetite_or_overeatin	feeling_bad_about_yourself	trouble_concentrating_on_t	moving_or_speaking_so_slow	thoughts_that_you_would_be
-```{r}
-#Depression
-depression = FHHC_redcap[,30:38]
-depression = rowSums(depression)
-mean(depression)
-```
-Substance use Audit
-```{r}
-audit = FHHC_redcap[,6:15]
-audit = rowSums(audit)
-audit = na.omit(audit)
-length(audit)
-mean(audit, na.rm =TRUE)
-```
-ER Usage
-```{r}
-mean(FHHC$TimesER)
-```
-Hospitalizations
-NightsHospitalMHC
-BeenHospitalizedIntegerCount
-```{r}
-mean(FHHC$NightsHospitalMH)
-```
-Anxeity
-```{r}
+#multiply by decimal of mean of age group
 
-head(FHHC_redcap)[c(42:48)]
+44-((44-35)*.62)
 
-GAD7 =  rowSums(FHHC_redcap[c(42:48)])
-mean(GAD7)
-```
-Decrease in the number of services for mental health
-```{r}
-mean(FHHC$NightsHospitalMHC)
-```
-Average days using alcohol
-```{r}
-mean(FHHC$Alcohol_Use)
-d
-
+#Diagnosis FHHC$DiagnosisOne
 ```
 
 
+Depression
+```{r}
+#Depression base
+base_depression = base[,27:35]
+## number of people
+dim(base_depression)
+sum(is.na(base_depression))
+base_depression$PHQ_9_Total = rowSums(base_depression)
+mean(base_depression$PHQ_9_Total)
 
+## Depression follow-up
+month6_depression = month6[,28:36]
+### number of people
+dim(month6_depression)
+sum(is.na(month6_depression))
+month6_depression$PHQ_9_Total = rowSums(month6_depression)
+mean(month6_depression$PHQ_9_Total)
+```
+
+
+ER Visits
+```{r}
+#ER Visits
+FHHC_wide_ER = data.frame(Base_ER = FHHC_wide$TimesER.x, Month6_ER = FHHC_wide$TimesER.y)
+FHHC_wide_ER_complete = na.omit(FHHC_wide_ER)
+#number of people
+dim(FHHC_wide_ER_complete)
+head(FHHC_wide_ER)
+#Base
+sum(FHHC_wide_ER$Base_ER)
+#Follow-up
+sum(FHHC_wide_ER$Month6_ER)
+FHHC_wide$NightsHospitalMHC.x
+```
 
 
