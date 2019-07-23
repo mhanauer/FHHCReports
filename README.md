@@ -5,8 +5,9 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
-
+```
+Getting the matched pairs for FHHC data need to get rid of the '' on the id
+```{r}
 library(prettyR)
 library(psych)
 
@@ -15,7 +16,7 @@ library(psych)
 #month6 = read.csv("FHHC_Month6.csv", header = TRUE, na.string = c(-99, -98, -97, " "))
 #FHHC = read.csv("FHHC.csv", header = TRUE, na.string = c(-99, -98, -97, -1, -4, -5, -7, -9, -2, -6 -8, " "))
 
-#Get matched pairs in FHHC data
+#Get matched pairs in FHHC data 
 
 dim(FHHC)
 FHHC = FHHC[order(FHHC$ConsumerID),]
@@ -31,19 +32,15 @@ dim(FHHC_Month6)
 FHHC_wide = merge(FHHC_base, FHHC_Month6, by = "ConsumerID", all.y = TRUE)
 dim(FHHC_wide)
 FHHC_wide$ConsumerID == FHHC_Month6$ConsumerID
-### Merge redcap
-base$record_id
 ```
+
+
 Get date from SPARS / NOMS / GPRA and put into redcap base and redcap month6
+Need to get the date from FHHC data for the RedCap 6month data, because we don't have it in the RedCap 6month data set.
 ```{r}
 library(lubridate)
 typeof(FHHC$ConsumerID)
 date_base = data.frame(record_id =  FHHC_base$ConsumerID,  InterviewDate = FHHC_base$InterviewDate)
-dim(date_base)
-dim(base)
-
-base$record_id
-date_base$record_id
 
 redcap_date_base = merge(base, date_base, by = "record_id", all.x = TRUE)
 dim(redcap_date_base)
@@ -59,12 +56,9 @@ month6$record_id = month6$id
 redcap_date_Month6 = merge(month6, date_Month6, by = "record_id", all.y = TRUE)
 dim(redcap_date_Month6)
 
-redcap_date_Month6$little_interest_or_pleasur
-redcap_date_Month6$InterviewDate
 
-redcap_date_Month6_q3 = subset(redcap_date_Month6, redcap_date_Month6$InterviewDate <"2019/07/01")
-dim(redcap_date_Month6_q3)
-head(redcap_date_Month6)
+redcap_data= merge(redcap_date_base, redcap_date_Month6, by = "record_id", all.y = TRUE)
+dim(redcap_data)
 
 ```
 
@@ -110,7 +104,7 @@ mean(FHHC_base$Agegroup)
 Depression (mean score)
 ```{r}
 #Depression base
-base_depression = redcap_date_base_q3[,27:35]
+base_depression = redcap_data[,27:35]
 head(base_depression)
 ## number of people
 dim(base_depression)
@@ -119,7 +113,7 @@ base_depression$PHQ_9_Total = rowSums(base_depression)
 mean(base_depression$PHQ_9_Total)
 
 ## Depression follow-up
-month6_depression = redcap_date_Month6_q3[28:36]
+month6_depression = redcap_data[138:146]
 ### number of people
 dim(month6_depression)
 sum(is.na(month6_depression))
