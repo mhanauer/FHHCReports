@@ -38,14 +38,11 @@ FHHC_wide$ConsumerID == FHHC_Month6$ConsumerID
 Get date from SPARS / NOMS / GPRA and put into redcap base and redcap month6
 Need to get the date from FHHC data for the RedCap 6month data, because we don't have it in the RedCap 6month data set.
 ```{r}
-library(lubridate)
-typeof(FHHC$ConsumerID)
 date_base = data.frame(record_id =  FHHC_base$ConsumerID,  InterviewDate = FHHC_base$InterviewDate)
 
-redcap_date_base = merge(base, date_base, by = "record_id", all.x = TRUE)
+redcap_date_base = merge(base, date_base, by = "record_id", all.y = TRUE)
 dim(redcap_date_base)
-head(redcap_date_base)
-
+dim(base)
 
 ###### Now six months
 date_Month6 = data.frame(record_id =  FHHC_Month6$ConsumerID,  InterviewDate = FHHC_Month6$InterviewDate)
@@ -113,7 +110,8 @@ base_depression$PHQ_9_Total = rowSums(base_depression)
 mean(base_depression$PHQ_9_Total)
 
 ## Depression follow-up
-month6_depression = redcap_data[138:146]
+month6_depression = redcap_data[,138:146]
+View(month6_depression)
 ### number of people
 dim(month6_depression)
 sum(is.na(month6_depression))
@@ -160,7 +158,7 @@ Anxiety GAD 7 (mean score)
 ```{r}
 #Anxiety baseline
 
-base_anxiety = base[,39:45]
+base_anxiety = redcap_data[,39:45]
 head(base_anxiety)
 
 ## number of people
