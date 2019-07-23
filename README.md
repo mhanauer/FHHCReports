@@ -19,34 +19,52 @@ library(psych)
 
 dim(FHHC)
 FHHC = FHHC[order(FHHC$ConsumerID),]
+FHHC$ConsumerID = gsub("\\D", "",FHHC$ConsumerID)
+FHHC$ConsumerID = as.numeric(FHHC$ConsumerID)
+FHHC$InterviewDate = mdy(FHHC$InterviewDate)
+dim(FHHC)
+FHHC =subset(FHHC, FHHC$InterviewDate < "2019/07/01")
 FHHC_base = subset(FHHC, FHHC$InterviewType_07 == 1)
 FHHC_Month6 = subset(FHHC, FHHC$InterviewType_07 == 3)
 dim(FHHC_Month6)
+
 FHHC_wide = merge(FHHC_base, FHHC_Month6, by = "ConsumerID", all.y = TRUE)
 dim(FHHC_wide)
 FHHC_wide$ConsumerID == FHHC_Month6$ConsumerID
 ### Merge redcap
 base$record_id
-
-
-redcap$thoughts_that_you_would_be.x
 ```
 Get date from SPARS / NOMS / GPRA and put into redcap base and redcap month6
 ```{r}
 library(lubridate)
 typeof(FHHC$ConsumerID)
-
-date_base = data.frame(record_id =  FHHC$ConsumerID,  InterviewDate = FHHC$InterviewDate)
-date_base$InterviewDate = mdy(date_base$InterviewDate)
-
+date_base = data.frame(record_id =  FHHC_base$ConsumerID,  InterviewDate = FHHC_base$InterviewDate)
+dim(date_base)
+dim(base)
 
 base$record_id
-redcap_date_base = merge(base, date, by = "record_id", all.y = TRUE)
-redcap_date_base$InterviewDate
+date_base$record_id
 
-redcap = merge(base, month6, by = "record_id", all.y = TRUE)
-dim(redcap)
-redcap$record_id == month6$record_id
+redcap_date_base = merge(base, date_base, by = "record_id", all.x = TRUE)
+dim(redcap_date_base)
+head(redcap_date_base)
+
+
+###### Now six months
+date_Month6 = data.frame(record_id =  FHHC_Month6$ConsumerID,  InterviewDate = FHHC_Month6$InterviewDate)
+dim(date_Month6)
+dim(month6)
+month6$record_id = month6$id
+
+redcap_date_Month6 = merge(month6, date_Month6, by = "record_id", all.y = TRUE)
+dim(redcap_date_Month6)
+
+redcap_date_Month6$little_interest_or_pleasur
+redcap_date_Month6$InterviewDate
+
+redcap_date_Month6_q3 = subset(redcap_date_Month6, redcap_date_Month6$InterviewDate <"2019/07/01")
+dim(redcap_date_Month6_q3)
+head(redcap_date_Month6)
 
 ```
 
@@ -92,7 +110,7 @@ mean(FHHC_base$Agegroup)
 Depression (mean score)
 ```{r}
 #Depression base
-base_depression = redcap[,27:35]
+base_depression = redcap_date_base_q3[,27:35]
 head(base_depression)
 ## number of people
 dim(base_depression)
@@ -101,7 +119,7 @@ base_depression$PHQ_9_Total = rowSums(base_depression)
 mean(base_depression$PHQ_9_Total)
 
 ## Depression follow-up
-month6_depression = month6[,28:36]
+month6_depression = redcap_date_Month6_q3[28:36]
 ### number of people
 dim(month6_depression)
 sum(is.na(month6_depression))
