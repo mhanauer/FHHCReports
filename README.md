@@ -191,8 +191,9 @@ dim(base_anxiety)[1]
 
 
 
-dep_results = data.frame(dep_mean_base = mean(base_anxiety$Gad_7_Total), dep_mean_month6mean = mean(month6_anxiety$Gad_7_Total), n = dim(base_anxiety)[1])
-dep_results
+anx_results = data.frame(dep_mean_base = mean(base_anxiety$Gad_7_Total), dep_mean_month6mean = mean(month6_anxiety$Gad_7_Total), n = dim(base_anxiety)[1], pchange = (mean(month6_anxiety$Gad_7_Total-mean(base_anxiety$Gad_7_Total))/mean(base_anxiety$Gad_7_Total)))
+anx_results
+
 ```
 Services related to SMI/COD (count)
 ```{r}
@@ -232,6 +233,9 @@ sum(is.na(month6_audit))
 
 month6_audit$Audit_Total = rowSums(month6_audit)
 mean(month6_audit$Audit_Total)
+
+p_change = (mean(month6_audit$Audit_Total)-mean(base_audit$Audit_Total))/mean(base_audit$Audit_Total)
+p_change
 ```
 
 DAST-10 (Mean Score)
@@ -258,8 +262,8 @@ sum(is.na(month6_dast))
 month6_dast$Dast_Total = rowSums(month6_dast)
 mean(month6_dast$Dast_Total)
 
-
-
+p_change = (mean(month6_dast$Dast_Total)-mean(base_dast$Dast_Total))/mean(base_dast$Dast_Total)
+p_change
 ```
 Benefits enrollment (redcap)
 ```{r}
