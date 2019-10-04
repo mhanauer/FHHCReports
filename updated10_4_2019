@@ -44,9 +44,9 @@ FHHC_month6 = subset(FHHC, FHHC$InterviewType_07 == 3)
 dim(FHHC_month6)
 dim(FHHC_base)
 
-FHHC_wide = merge(FHHC_base, FHHC_month6_redcap, by = "ConsumerID", all.y = TRUE)
+FHHC_wide = merge(FHHC_base, FHHC_month6, by = "ConsumerID", all.y = TRUE)
 dim(FHHC_wide)
-FHHC_wide$ConsumerID == FHHC_month6_redcap$ConsumerID
+FHHC_wide$ConsumerID == FHHC_month6$ConsumerID
 ```
 Get date from SPARS / NOMS / GPRA and put into redcap base_redcap and redcap month6_redcap Need to get the date from FHHC data for the RedCap 6month data, because we don't have it in the RedCap 6month data set.
 
