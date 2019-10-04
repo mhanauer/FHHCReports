@@ -60,10 +60,14 @@ dim(base_redcap)
 base_redcap = subset(redcap_date_base, InterviewDate < "2019-10-01")
 dim(base_redcap)
 
+#CHANGE "id" column name in month6 to "record_id" so you can merge based on that variable (did it manually because was struggling to rename column with name that already existed)
+
 
 
 base_redcap$record_id
 month6_redcap$record_id
+
+
 
 redcap_data = merge(base_redcap, month6_redcap, by = "record_id", all.y = TRUE)
 head(redcap_data)
@@ -147,6 +151,8 @@ sum(FHHC_wide_ER$base_redcap_ER)
 #Follow-up
 sum(FHHC_wide_ER$month6_redcap_ER)
 
+FHHC_wide_ER_complete
+
 ```
 Hospitalizations (count)
 ```{r}
@@ -195,6 +201,7 @@ sum(is.na(month6_redcap_anxiety))
 
 #follow-up mean score
 month6_redcap_anxiety$Gad_7_Total = rowSums(month6_redcap_anxiety)
+mean(month6_redcap_anxiety$Gad_7_Total)
 
 ## Final results
 dim(base_redcap_anxiety)[1]
@@ -224,7 +231,7 @@ Alcohol (AUDIT mean score)
 ```{r}
 #AUDIT base_redcapline
 
-base_redcap_audit = redcap_data[,3:12]
+base_redcap_audit = redcap_data[,5:14]
 head(base_redcap_audit)
 
 dim(base_redcap_audit)
@@ -235,7 +242,7 @@ base_redcap_audit$Audit_Total = rowSums(base_redcap_audit)
 mean(base_redcap_audit$Audit_Total)
 
 #AUDIT follow-up
-month6_redcap_audit = redcap_data[,114:123]
+month6_redcap_audit = redcap_data[,116:125]
 head(month6_redcap_audit)
 
 dim(month6_redcap_audit)
@@ -252,7 +259,7 @@ DAST-10 (Mean Score)
 ```{r}
 #DAST base_redcapline
 
-base_redcap_dast = redcap_data[,15:24]
+base_redcap_dast = redcap_data[,17:26]
 head(base_redcap_dast)
 
 dim(base_redcap_dast)
@@ -263,11 +270,15 @@ base_redcap_dast$Dast_Total = rowSums(base_redcap_dast)
 mean(base_redcap_dast$Dast_Total)
 
 #Dast follow-up
-month6_redcap_dast = redcap_data[,126:135]
+month6_redcap_dast = redcap_data[,128:137]
 head(month6_redcap_dast)
 
+
 dim(month6_redcap_dast)
+month6_redcap_dast = na.omit(month6_redcap_dast)
 sum(is.na(month6_redcap_dast))
+
+
 
 month6_redcap_dast$Dast_Total = rowSums(month6_redcap_dast)
 mean(month6_redcap_dast$Dast_Total)
@@ -275,15 +286,25 @@ mean(month6_redcap_dast$Dast_Total)
 p_change = (mean(month6_redcap_dast$Dast_Total)-mean(base_redcap_dast$Dast_Total))/mean(base_redcap_dast$Dast_Total)
 p_change
 ```
-Benefits enrollment (redcap)
+Benefits enrollment (redcap) "Increase enrollment in health insurance, Medicaid, VA, SSI/SSDI, other benefit programs by 80% for clients
+in need of/eligible for these benefits by 9/29/2023."
 ```{r}
+base_redcap_benefits = redcap_data[,100:108]
+head(base_redcap_benefits)
+
+dim(base_redcap_benefits)
+base_redcap_benefits = na.omit(base_redcap_benefits)
+sum(is.na(base_redcap_benefits))
+
+base_redcap_benefits$Benefits_Total = rowSums(base_redcap_benefits)
+mean(base_redcap_benefits$Benefits_Total)
 
 ```
 
 
 
 
-BARC mean score (increase in recovery capital) (not all in base_redcapline completed this measure)
+BARC mean score (increase in recovery capital) (not all in base_redcapline completed this measure) STILL COLLECTING DATA FOR THIS
 ```{r}
 #Barc base_redcapline
 base_redcap_barc = base_redcap[,86:95]
@@ -315,7 +336,8 @@ PLC-C mean score decrease (lesser trauma symptoms) (if we want to use this, or w
 ```{r}
 #plc base_redcap
 
-base_redcap_plc = redcap_data[,48:64]
+
+base_redcap_plc = redcap_data[,50:66]
 head(base_redcap_plc)
 
 ## number of people
@@ -327,7 +349,7 @@ base_redcap_plc$Plc_Total = rowSums(base_redcap_plc)
 mean(base_redcap_plc$Plc_Total)
 
 ## PLC follow-up
-month6_redcap_plc = redcap_data[,159:175]
+month6_redcap_plc = redcap_data[,161:177]
 head(month6_redcap_plc)
 
 ### number of people
