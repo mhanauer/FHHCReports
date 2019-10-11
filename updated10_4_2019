@@ -110,6 +110,13 @@ mean(FHHC_base$Agegroup)
 35 + .52*(9)
 
 
+
+#DIAGNOSES
+
+FHHC_base$DiagnosisOne
+describe.factor(FHHC_base$DiagnosisOne)
+
+
 ```
 
 Depression (mean score)
