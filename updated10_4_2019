@@ -38,7 +38,7 @@ FHHC$InterviewDate = mdy(FHHC$InterviewDate)
 dim(FHHC)
 ## Change date to next quarter
 FHHC =subset(FHHC, FHHC$InterviewDate < "2019/10/01")
-head(FHHC)
+
 FHHC_base = subset(FHHC, FHHC$InterviewType_07 == 1)
 FHHC_month6 = subset(FHHC, FHHC$InterviewType_07 == 3)
 dim(FHHC_month6)
@@ -107,7 +107,7 @@ describe.factor(FHHC_base$Agegroup)
 mean(FHHC_base$Agegroup)
 #multiply by decimal of mean of age group
 
-44-((44-35)*.52)
+35 + .52*(9)
 
 
 ```
@@ -289,15 +289,117 @@ p_change
 Benefits enrollment (redcap) "Increase enrollment in health insurance, Medicaid, VA, SSI/SSDI, other benefit programs by 80% for clients
 in need of/eligible for these benefits by 9/29/2023."
 ```{r}
-base_redcap_benefits = redcap_data[,100:108]
-head(base_redcap_benefits)
 
-dim(base_redcap_benefits)
-base_redcap_benefits = na.omit(base_redcap_benefits)
-sum(is.na(base_redcap_benefits))
+#benefit at base, benefit at month 6, then percent change from base to month 6
 
-base_redcap_benefits$Benefits_Total = rowSums(base_redcap_benefits)
-mean(base_redcap_benefits$Benefits_Total)
+#MEDICAID OR MEDICARE
+
+#BASELINE
+
+base_medicaid = redcap_data$medicaid_or_medicare.x
+base_medicaid = na.omit(base_medicaid)
+sum_base_med = sum(base_medicaid)
+
+#MONTH6
+
+month6_medicaid = redcap_data$medicaid_or_medicare.y
+month6_medicaid = na.omit(month6_medicaid)
+sum_month6_med = sum(month6_medicaid)
+
+p_change_med = (sum_month6_med - sum_base_med)/sum_base_med
+
+medicaid_or_medicare = data.frame(base = sum_base_med, month6 = sum_month6_med, percentchange = p_change_med)
+
+medicaid_or_medicare
+
+
+#HIP
+
+#BASELINE
+
+base_hip = redcap_data$healthy_indiana_plan_hip.x
+base_hip = na.omit(base_hip)
+sum_base_hip = sum(base_hip)
+
+
+#MONTH6
+month6_hip = redcap_data$healthy_indiana_plan_hip.y
+month6_hip = na.omit(month6_hip)
+sum_month6_hip = sum(month6_hip)
+
+p_change_hip = (sum_month6_hip - sum_base_hip)/sum_base_hip
+
+hip = data.frame(base = sum_base_hip, month6 = sum_month6_hip, percentchange = p_change_hip)
+
+hip
+
+#SSI or SSDI
+
+#BASELINE
+
+base_ssi = redcap_data$ssi_or_ssdi.x
+base_ssi = na.omit(base_ssi)
+sum_base_ssi = sum(base_ssi)
+
+#MONTH 6
+month6_ssi = redcap_data$ssi_or_ssdi.y
+month6_ssi = na.omit(month6_ssi)
+sum_month6_ssi = sum(month6_ssi)
+
+
+p_change_ssi = (sum_month6_ssi - sum_base_ssi)/sum_base_ssi
+
+ssi_or_ssdi = data.frame(base = sum_base_ssi, month6 = sum_month6_ssi, percentchange = p_change_ssi)
+
+ssi_or_ssdi
+
+
+#HUD
+
+#BASELINE
+
+base_hud = redcap_data$hud_or_section_8.x
+base_hud = na.omit(base_hud)
+sum_base_hud = sum(base_hud)
+
+#MONTH6
+
+month6_hud = redcap_data$hud_or_section_8.y
+month6_hud = na.omit(month6_hud)
+sum_month6_hud = sum(month6_hud)
+
+p_change_hud = (sum_month6_hud - sum_base_hud)/sum_base_hud
+
+hud = data.frame(base = sum_base_hud, month6 = sum_month6_hud, percentchange = p_change_hud)
+
+hud
+
+
+#SNAP
+
+#BASE
+
+base_snap = redcap_data$snap_food_stamps.x
+base_snap = na.omit(base_snap)
+sum_base_snap = sum(base_snap)
+
+#MONTH6
+month6_snap = redcap_data$snap_food_stamps.y
+month6_snap = na.omit(month6_snap)
+sum_month6_snap = sum(month6_snap)
+
+p_change_snap = (sum_month6_snap - sum_base_snap)/sum_base_snap
+
+snap = data.frame(base = sum_base_snap, month6 = sum_month6_snap, percentchange = p_change_snap)
+
+snap
+
+
+#PERCENT CHANGE OF ALL BENEFITS
+
+benefits_percent_change = data.frame(medicaid_medicare = p_change_med, hip = p_change_hip, ssi_ssdi = p_change_ssi, hud = p_change_hud, snap = p_change_snap)
+
+benefits_percent_change
 
 ```
 
@@ -366,5 +468,3 @@ p_change_plc = (mean(month6_redcap_plc$Plc_Total)-mean(base_redcap_plc$Plc_Total
 p_change_plc
 
 ```
-
-
