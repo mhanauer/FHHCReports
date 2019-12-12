@@ -1,338 +1,1395 @@
 ---
-title: "FHHC Report"
+
+title: "FHHC Yearly Report (Year 1)"
+
 output: html_document
+
 ---
 
+ 
+
 ```{r setup, include=FALSE}
+
 knitr::opts_chunk$set(echo = TRUE)
 
 ```
-Getting the matched pairs for FHHC data need to get rid of the '' on the id
+
+ 
+
+Load in packages
+
+ 
+
 ```{r}
+
 library(prettyR)
+
 library(psych)
-
-#setwd("S:/Indiana Research & Evaluation/FHHC Homelessness/Data and QPR")
-#base = read.csv("FHHC_base.csv", header = TRUE, na.strings = c(-99, -98, -97, " "))
-#month6 = read.csv("FHHC_Month6.csv", header = TRUE, na.string = c(-99, -98, -97, " "))
-#FHHC = read.csv("FHHC.csv", header = TRUE, na.string = c(-99, -98, -97, -1, -4, -5, -7, -9, -2, -6 -8, " "))
-
-#Get matched pairs in FHHC data 
 
 library(lubridate)
 
-dim(FHHC)
-FHHC = FHHC[order(FHHC$ConsumerID),]
-FHHC$ConsumerID = gsub("\\D", "",FHHC$ConsumerID)
-FHHC$ConsumerID = as.numeric(FHHC$ConsumerID)
-FHHC$InterviewDate = mdy(FHHC$InterviewDate)
-dim(FHHC)
-## Change date to next quarter
-FHHC =subset(FHHC, FHHC$InterviewDate < "2019/10/01")
-FHHC_base = subset(FHHC, FHHC$InterviewType_07 == 1)
-FHHC_Month6 = subset(FHHC, FHHC$InterviewType_07 == 3)
-dim(FHHC_Month6)
-
-FHHC_wide = merge(FHHC_base, FHHC_Month6, by = "ConsumerID", all.y = TRUE)
-dim(FHHC_wide)
-FHHC_wide$ConsumerID == FHHC_Month6$ConsumerID
 ```
-Get date from SPARS / NOMS / GPRA and put into redcap base and redcap month6 Need to get the date from FHHC data for the RedCap 6month data, because we don't have it in the RedCap 6month data set.
+
+ 
+
+Working directory
+
+ 
 
 ```{r}
-date_base = data.frame(record_id =  FHHC_base$ConsumerID,  InterviewDate = FHHC_base$InterviewDate)
 
-redcap_date_base = merge(base, date_base, by = "record_id", all.y = TRUE)
-dim(redcap_date_base)
-dim(base)
+setwd("S:/Indiana Research & Evaluation/FHHC Homelessness/Data and QPR/YearlyReports")
 
-###### Now six months
-date_Month6 = data.frame(record_id =  FHHC_Month6$ConsumerID,  InterviewDate = FHHC_Month6$InterviewDate)
-dim(date_Month6)
-dim(month6)
-month6$record_id = month6$id
+base_redcap = read.csv("base.csv", header = TRUE, na.strings = c(-99, -98, -97, " "))
 
-redcap_date_Month6 = merge(month6, date_Month6, by = "record_id", all.y = TRUE)
-dim(redcap_date_Month6)
+month6_redcap = read.csv("month6.csv", header = TRUE, na.strings = c(-99, -98, -97, " "))
 
+SPARS_data = read.csv("FHHC.csv", header = TRUE, na.strings = c(-99, -98, -97, -1, -4, -5, -7, -9, -2, -6, -8, " "))
 
-redcap_data= merge(redcap_date_base, redcap_date_Month6, by = "record_id", all.y = TRUE)
+```
+
+ 
+
+Matched Pairs in SPARS Data (base and month 6)
+
+ 
+
+```{r}
+
+dim(SPARS_data)
+
+SPARS_data = SPARS_data[order(SPARS_data$ConsumerID),]
+
+head(SPARS_data)
+
+SPARS_data$ConsumerID = gsub("\\D", "",SPARS_data$ConsumerID)
+
+SPARS_data$ConsumerID = as.numeric(SPARS_data$ConsumerID)
+
+SPARS_data$InterviewDate = mdy(SPARS_data$InterviewDate)
+
+dim(SPARS_data)
+
+ 
+
+## SET DATE FOR ALL DATA IN GRANT YEAR (Y1 ended Sept 30)
+
+SPARS_data = subset(SPARS_data, SPARS_data$InterviewDate < "2019/10/01")
+
+ 
+
+ 
+
+SPARS_base = subset(SPARS_data, SPARS_data$InterviewType_07 == 1)
+
+SPARS_month6 = subset(SPARS_data, SPARS_data$InterviewType_07 == 3)
+
+dim(SPARS_month6)
+
+dim(SPARS_base)
+
+ 
+
+SPARS_wide = merge(SPARS_base, SPARS_month6, by = "ConsumerID", all.y = TRUE)
+
+dim(SPARS_wide)
+
+SPARS_wide$ConsumerID == SPARS_month6$ConsumerID
+
+```
+
+ 
+
+Get date from SPARs and put into REDCap month6 data (we don't have a date in REDCap month6 as it currently stands)
+
+```{r}
+
+SPARS_date_base = data.frame(record_id =  SPARS_base$ConsumerID,  InterviewDate = SPARS_base$InterviewDate)
+
+ 
+
+redcap_date_base = merge(base_redcap, SPARS_date_base, by = "record_id", all.y = TRUE)
+
+head(redcap_date_base)
+
+dim(base_redcap)
+
+ 
+
+ 
+
+#CHANGE DATE to correct year and stuff
+
+base_redcap = subset(redcap_date_base, InterviewDate < "2020-01-01")
+
+dim(base_redcap)
+
+ 
+
+ 
+
+#CHANGE "id" column name in month6 to "record_id" so you can merge based on that variable (did it manually because was struggling to rename column with name that already existed)
+
+ 
+
+ 
+
+ 
+
+base_redcap$record_id
+
+month6_redcap$record_id
+
+ 
+
+ 
+
+ 
+
+redcap_data = merge(base_redcap, month6_redcap, by = "record_id", all.y = TRUE)
+
+head(redcap_data)
+
 dim(redcap_data)
 
-```
-
-Descriptives
-```{r}
-library(prettyR)
-#1 = male; 2 = female
-describe.factor(FHHC_base$Gender)
-
-#RACE
-describe.factor(FHHC_base$RaceWhite)
-describe.factor(FHHC_base$RaceBlack)
-describe.factor(FHHC_base$HispanicLatino)
-describe.factor(FHHC_base$RaceAsian)
-
-#12 = 12TH GRADE /HIGH SCHOOL DIPLOMA/ EQUIVALENT (GED)
-#13 = VOC/TECH DIPLOMA
-#14 = SOME COLLEGE OR UNIVERSITY
-#15 = BACHELOR'S DEGREE (BA, BS)
-#16 = GRADUATE WORK/GRADUATE DEGREE
-describe.factor(FHHC_base$Education)
-
-#4 = Age 16 to 25 years old
-#5 = Age 26 to 34 years old
-#6 = Age 35 to 44 years old
-#7 = Age 45 to 54 years old
-#8 = Age 55 to 64 years old
-#9= 65 to 74 years old
-#10 = Age 75 to 84 years old
-#11 = Age 85 to 94 years old
-#12 = Age 95 years or older
-describe.factor(FHHC_base$Agegroup)
-mean(FHHC_base$Agegroup)
-#multiply by decimal of mean of age group
-
-44-((44-35)*.68)
-
+ 
 
 ```
 
-Depression (mean score)
+ 
+
+Obj. A: Reduce mental health symptomatology by 50% for enrollees with SMI per 6-month and discharge follow-ups.
+
+Use PHQ-9 and GAD-7 mean scores
 
 ```{r}
-#Depression base
-base_depression = redcap_data[,27:35]
-head(base_depression)
+
+#Depression base_redcap
+
+base_redcap_depression = redcap_data[,29:37]
+
+head(base_redcap_depression)
+
 ## number of people
-dim(base_depression)
-sum(is.na(base_depression))
-base_depression$PHQ_9_Total = rowSums(base_depression)
-mean(base_depression$PHQ_9_Total)
+
+dim(base_redcap_depression)
+
+sum(is.na(base_redcap_depression))
+
+base_redcap_depression$PHQ_9_Total = rowSums(base_redcap_depression)
+
+mean(base_redcap_depression$PHQ_9_Total)
+
+ 
 
 ## Depression follow-up
-month6_depression = redcap_data[,138:146]
-View(month6_depression)
-head(month6_depression)
+
+month6_redcap_depression = redcap_data[,140:148]
+
+head(month6_redcap_depression)
+
 ### number of people
-dim(month6_depression)
-sum(is.na(month6_depression))
-month6_depression$PHQ_9_Total = rowSums(month6_depression)
-mean(month6_depression$PHQ_9_Total)
+
+dim(month6_redcap_depression)
+
+sum(is.na(month6_redcap_depression))
+
+month6_redcap_depression$PHQ_9_Total = rowSums(month6_redcap_depression)
+
+mean(month6_redcap_depression$PHQ_9_Total)
+
+ 
 
 #percent change
-p_change_phq =  (mean(month6_depression$PHQ_9_Total)-mean(base_depression$PHQ_9_Total))/mean(base_depression$PHQ_9_Total)
+
+p_change_phq =  (mean(month6_redcap_depression$PHQ_9_Total)-mean(base_redcap_depression$PHQ_9_Total))/mean(base_redcap_depression$PHQ_9_Total)
+
 p_change_phq
+
+ 
+
+ 
+
+#Anxiety base_redcap
+
+ 
+
+base_redcap_anxiety = redcap_data[,41:47]
+
+head(base_redcap_anxiety)
+
+ 
+
+## number of people
+
+dim(base_redcap_anxiety)
+
+sum(is.na(base_redcap_anxiety))
+
+ 
+
+#base_redcapline mean score
+
+base_redcap_anxiety$Gad_7_Total = rowSums(base_redcap_anxiety)
+
+mean(base_redcap_anxiety$Gad_7_Total)
+
+ 
+
+## Anxiety follow-up
+
+month6_redcap_anxiety = redcap_data[,152:158]
+
+head(month6_redcap_anxiety)
+
+ 
+
+### number of people
+
+dim(month6_redcap_anxiety)
+
+sum(is.na(month6_redcap_anxiety))
+
+ 
+
+#follow-up mean score
+
+month6_redcap_anxiety$Gad_7_Total = rowSums(month6_redcap_anxiety)
+
+mean(month6_redcap_anxiety$Gad_7_Total)
+
+ 
+
+## Final results
+
+dim(base_redcap_anxiety)[1]
+
+ 
+
+ 
+
+ 
+
+anx_results = data.frame(dep_mean_base_redcap = mean(base_redcap_anxiety$Gad_7_Total), dep_mean_month6_redcapmean = mean(month6_redcap_anxiety$Gad_7_Total), n = dim(base_redcap_anxiety)[1], pchange_anx = (mean(month6_redcap_anxiety$Gad_7_Total-mean(base_redcap_anxiety$Gad_7_Total))/mean(base_redcap_anxiety$Gad_7_Total)))
+
+anx_results
+
+pchange_anx = (mean(month6_redcap_anxiety$Gad_7_Total-mean(base_redcap_anxiety$Gad_7_Total))/mean(base_redcap_anxiety$Gad_7_Total))
+
+ 
+
+mental_health_percent_change = data.frame(depression = p_change_phq, anxiety = pchange_anx)
+
+mental_health_percent_change
+
 ```
 
-ER Visits (count)
+ 
+
+Obj. B: Increase abstinence vs. past 30-day substance use among 70% of enrolled clients with SUD/COD per 6-month
+
+and discharge follow-ups.
+
+Drug/Alc use questions in NOMS
+
+ 
+
+Tobacco_Use
+
+Alcohol_Use
+
+Cannabis_Use
+
+ 
+
+1 = Never
+
+2 = Once or Twice
+
+3 = Weekly
+
+4 = Daily or Almost Daily
+
 ```{r}
+
+#Compare % abstaining at baseline vs. month 6
+
+ 
+
+#TOBACCO USE at BASELINE
+
+ 
+
+describe.factor(SPARS_wide$Tobacco_Use.x)
+
+ 
+
+#TOBACCO USE at MONTH6
+
+ 
+
+describe.factor(SPARS_wide$Tobacco_Use.y)
+
+ 
+
+ 
+
+#AlCOHOL USE at BASELINE
+
+ 
+
+describe.factor(SPARS_wide$Alcohol_Use.x)
+
+ 
+
+ 
+
+#ALCOHOL USE at MONTH6
+
+ 
+
+describe.factor(SPARS_wide$Alcohol_Use.y)
+
+ 
+
+ 
+
+#CANNABIS USE at BASELINE
+
+ 
+
+describe.factor(SPARS_wide$Cannabis_Use.x)
+
+ 
+
+ 
+
+#CANNABIS USE at MONTH6
+
+describe.factor(SPARS_wide$Cannabis_Use.y)
+
+```
+
+ 
+
+Obj. C: Reduce symptoms of trauma by 50% for enrollees who screen positive for trauma-related conditions per 6-
+
+month and discharge follow-ups.
+
+Use PLC-C mean scores
+
+```{r}
+
+#plc base_redcap
+
+ 
+
+ 
+
+base_redcap_plc = redcap_data[,50:66]
+
+head(base_redcap_plc)
+
+ 
+
+## number of people
+
+dim(base_redcap_plc)
+
+sum(is.na(base_redcap_plc))
+
+ 
+
+#base_redcapline mean score
+
+base_redcap_plc$Plc_Total = rowSums(base_redcap_plc)
+
+mean(base_redcap_plc$Plc_Total)
+
+ 
+
+## PLC follow-up
+
+month6_redcap_plc = redcap_data[,161:177]
+
+head(month6_redcap_plc)
+
+ 
+
+### number of people
+
+dim(month6_redcap_plc)
+
+sum(is.na(month6_redcap_plc))
+
+ 
+
+#follow-up mean score
+
+month6_redcap_plc$Plc_Total = rowSums(month6_redcap_plc)
+
+mean(month6_redcap_plc$Plc_Total)
+
+ 
+
+#percent change
+
+ 
+
+p_change_plc = (mean(month6_redcap_plc$Plc_Total)-mean(base_redcap_plc$Plc_Total))/mean(base_redcap_plc$Plc_Total)
+
+p_change_plc
+
+ 
+
+ 
+
+plc_results = data.frame(plc_base = mean(base_redcap_plc$Plc_Total), plc_month6 = mean(month6_redcap_plc$Plc_Total), p_change = p_change_plc)
+
+plc_results
+
+```
+
+ 
+
+Obj. D: By 9/29/2023, reduce service/utilization costs related to SMI/COD issues (inpatient hospitalization,
+
+emergency room visits, etc.) by 50%.
+
+Use ER usage and Hospitalizations
+
+```{r}
+
 #ER Visits
-FHHC_wide_ER = data.frame(Base_ER = FHHC_wide$TimesER.x, Month6_ER = FHHC_wide$TimesER.y)
-FHHC_wide_ER_complete = na.omit(FHHC_wide_ER)
-#number of people
-dim(FHHC_wide_ER_complete)
-head(FHHC_wide_ER)
-#Base
-sum(FHHC_wide_ER$Base_ER)
-#Follow-up
-sum(FHHC_wide_ER$Month6_ER)
 
-```
-Hospitalizations (count)
-```{r}
+SPARS_wide_ER = data.frame(base_redcap_ER = SPARS_wide$TimesER.x, month6_redcap_ER = SPARS_wide$TimesER.y)
+
+SPARS_wide_ER_complete = na.omit(SPARS_wide_ER)
+
+#number of people
+
+dim(SPARS_wide_ER_complete)
+
+head(SPARS_wide_ER)
+
+#base_redcap
+
+sum(SPARS_wide_ER$base_redcap_ER)
+
+#Follow-up
+
+sum(SPARS_wide_ER$month6_redcap_ER)
+
+ 
+
+SPARS_wide_ER_complete
+
+ 
+
 #Nights Hospital MHC
-FHHC_wide_hospital = data.frame(Base_Hosp = FHHC_wide$NightsHospitalMHC.x, Month6_Hosp = FHHC_wide$NightsHospitalMHC.y)
-FHHC_wide_hospital_complete = na.omit(FHHC_wide_hospital)
+
+SPARS_wide_hospital = data.frame(base_redcap_Hosp = SPARS_wide$NightsHospitalMHC.x, month6_redcap_Hosp = SPARS_wide$NightsHospitalMHC.y)
+
+SPARS_wide_hospital_complete = na.omit(SPARS_wide_hospital)
+
+ 
 
 # number of people
 
-dim(FHHC_wide_hospital_complete)
-head(FHHC_wide_hospital)
+ 
 
-#sum baseline
+dim(SPARS_wide_hospital_complete)
 
-sum(FHHC_wide_hospital$Base_Hosp)
+head(SPARS_wide_hospital)
+
+ 
+
+#sum base_redcapline
+
+ 
+
+sum(SPARS_wide_hospital$base_redcap_Hosp)
+
+ 
 
 #sum month 6
-sum(FHHC_wide_hospital$Month6_Hosp)
 
-```
+sum(SPARS_wide_hospital$month6_redcap_Hosp)
 
+ 
 
-Anxiety GAD 7 (mean score)
-```{r}
-#Anxiety baseline
+ 
 
-base_anxiety = redcap_data[,39:45]
-head(base_anxiety)
+ 
 
-## number of people
-dim(base_anxiety)
-sum(is.na(base_anxiety))
-
-#baseline mean score
-base_anxiety$Gad_7_Total = rowSums(base_anxiety)
-View(base_anxiety$Gad_7_Total)
-mean(base_anxiety$Gad_7_Total)
-
-## Anxiety follow-up
-month6_anxiety = redcap_data[,150:156]
-head(month6_anxiety)
-
-### number of people
-dim(month6_anxiety)
-sum(is.na(month6_anxiety))
-
-#follow-up mean score
-month6_anxiety$Gad_7_Total = rowSums(month6_anxiety)
-
-## Final results
-dim(base_anxiety)[1]
-
-
-
-anx_results = data.frame(dep_mean_base = mean(base_anxiety$Gad_7_Total), dep_mean_month6mean = mean(month6_anxiety$Gad_7_Total), n = dim(base_anxiety)[1], pchange = (mean(month6_anxiety$Gad_7_Total-mean(base_anxiety$Gad_7_Total))/mean(base_anxiety$Gad_7_Total)))
-anx_results
-
-```
-Services related to SMI/COD (count)
-```{r}
 #sum hospitalizations for mental health and ER visits
 
-#baseline ER and hosp
+ 
 
-base_er_hosp = sum(FHHC_wide_ER$Base_ER, FHHC_wide_hospital$Base_Hosp)
+#base_redcap ER and hosp
+
+ 
+
+base_redcap_er_hosp = sum(SPARS_wide_ER$base_redcap_ER, SPARS_wide_hospital$base_redcap_Hosp)
+
+ 
 
 #follow-up ER and hosp
 
-month6_er_hosp = sum(FHHC_wide_ER$Month6_ER, FHHC_wide_hospital$Month6_Hosp)
+ 
 
-p_change_ER_hosp = (month6_er_hosp- base_er_hosp)/base_er_hosp 
+month6_redcap_er_hosp = sum(SPARS_wide_ER$month6_redcap_ER, SPARS_wide_hospital$month6_redcap_Hosp)
+
+ 
+
+p_change_ER_hosp = (month6_redcap_er_hosp- base_redcap_er_hosp)/base_redcap_er_hosp
+
 p_change_ER_hosp
-```
-Alcohol (AUDIT mean score)
-```{r}
-#AUDIT baseline
 
-base_audit = redcap_data[,3:12]
-head(base_audit)
+ 
 
-dim(base_audit)
-base_audit = na.omit(base_audit)
-sum(is.na(base_audit))
+ 
 
-base_audit$Audit_Total = rowSums(base_audit)
-mean(base_audit$Audit_Total)
+ER_hosp = data.frame(base_ER_hosp = base_redcap_er_hosp, month6_ER_hosp = month6_redcap_er_hosp, percentchange = p_change_ER_hosp)
 
-#AUDIT follow-up
-month6_audit = redcap_data[,114:123]
-head(month6_audit)
-
-dim(month6_audit)
-sum(is.na(month6_audit))
-
-month6_audit$Audit_Total = rowSums(month6_audit)
-mean(month6_audit$Audit_Total)
-
-p_change = (mean(month6_audit$Audit_Total)-mean(base_audit$Audit_Total))/mean(base_audit$Audit_Total)
-p_change
-```
-
-DAST-10 (Mean Score)
-```{r}
-#DAST baseline
-
-base_dast = redcap_data[,15:24]
-head(base_dast)
-
-dim(base_dast)
-base_dast = na.omit(base_dast)
-sum(is.na(base_dast))
-
-base_dast$Dast_Total = rowSums(base_dast)
-mean(base_dast$Dast_Total)
-
-#Dast follow-up
-month6_dast = redcap_data[,126:135]
-head(month6_dast)
-
-dim(month6_dast)
-sum(is.na(month6_dast))
-
-month6_dast$Dast_Total = rowSums(month6_dast)
-mean(month6_dast$Dast_Total)
-
-p_change = (mean(month6_dast$Dast_Total)-mean(base_dast$Dast_Total))/mean(base_dast$Dast_Total)
-p_change
-```
-Benefits enrollment (redcap)
-```{r}
+ER_hosp
 
 ```
 
+ 
 
+Obj. E: Reduce past 30-day involvement with the criminal justice system (e.g., arrest, re-arrest, re-conviction) among
 
+60% of enrollees with criminal justice histories per 6-month and discharge follow-ups.
 
-BARC mean score (increase in recovery capital) (not all in baseline completed this measure)
+ 
+
+Use variable "NumTimesArrested" from SPARS
+
 ```{r}
-#Barc Baseline
-base_barc = base[,86:95]
-base_barc = na.omit(base_barc)
-head(base_barc)
+
+base_arrests = SPARS_wide$NumTimesArrested.x
+
+base_arrests = na.omit(base_arrests)
+
+ 
+
+ 
+
+month6_arrests = SPARS_wide$NumTimesArrested.y
+
+month6_arrests = na.omit(month6_arrests)
+
+ 
+
+ 
+
+SPARS_wide_arrests = data.frame(base_arrests = SPARS_wide$NumTimesArrested.x, month6_arrests = SPARS_wide$NumTimesArrested.y)
+
+SPARS_wide_arrests = na.omit(SPARS_wide_arrests)
+
+sum(is.na(SPARS_wide_arrests))
+
+SPARS_wide_arrests
+
+ 
+
+sum_base_arrests = sum(base_arrests)
+
+sum_month6_arrests = sum(month6_arrests)
+
+ 
+
+p_change_arrests = (sum_month6_arrests - sum_base_arrests)/sum_base_arrests
+
+ 
+
+arrests = data.frame(base_arrests = sum_base_arrests, month6_arrests = sum_month6_arrests, p_change_arrests = p_change_arrests)
+
+arrests
+
+```
+
+ 
+
+Obj. F: Increase client access to treatment/services, including trauma-focused services, by 90% by 9/29/2023.
+
+ 
+
+Use NOMS variables "Svc_CaseManagement", "Svc_MentalHealth", "Svc_TreatmentPlanning" "Svc_TraumaSpecific", "Svc_Transportation", "Svc_Housing", "Svc_Employment", "Svc_Family", "Svc_ChildCare",  (asks if client has received X service since last NOMS interview)
+
+0 = no, 1 = yes
+
+We don't ask about these at baseline, so just show what services people are getting at 6month
+
+```{r}
+
+ 
+
+#we don't ask about services during baseline NOMS!
+
+ 
+
+#report % of people receiving each service
+
+ 
+
+#MONTH6 Trauma Services
+
+describe.factor(SPARS_wide$Svc_CaseManagement.y)
+
+describe.factor(SPARS_wide$Svc_MentalHealth.y)
+
+describe.factor(SPARS_wide$Svc_TreatmentPlanning.y)
+
+describe.factor(SPARS_wide$Svc_TraumaSpecific.y)
+
+describe.factor(SPARS_wide$Svc_Transportation.y)
+
+describe.factor(SPARS_wide$Svc_Housing.y)
+
+describe.factor(SPARS_wide$Svc_Employment.y)
+
+describe.factor(SPARS_wide$Svc_Family.y)
+
+describe.factor(SPARS_wide$Svc_ChildCare.y)
+
+```
+
+ 
+
+Obj. G: Increase recovery capital among 90% of enrollees by 9/29/2023.
+
+Use BARC-10 mean scores
+
+```{r}
+
+#Barc base_redcap
+
+base_redcap_barc = base_redcap[,88:97]
+
+base_redcap_barc = na.omit(base_redcap_barc)
+
+head(base_redcap_barc)
+
+ 
 
 ## number of people
-dim(base_barc)
-sum(is.na(base_barc))
 
-#baseline mean score
-base_barc$Barc_Total = rowSums(base_barc)
-mean(base_barc$Barc_Total)
+dim(base_redcap_barc)
+
+base_redcap_barc = na.omit(base_redcap_barc)
+
+sum(is.na(base_redcap_barc))
+
+ 
+
+#base_redcap mean score
+
+base_redcap_barc$Barc_Total = rowSums(base_redcap_barc)
+
+mean(base_redcap_barc$Barc_Total)
+
+mean_base_barc = mean(base_redcap_barc$Barc_Total)
+
+ 
 
 ## Barc follow-up
-month6_barc = month6[,81:90]
-head(month6_barc)
+
+month6_redcap_barc = month6_redcap[,83:92]
+
+head(month6_redcap_barc)
+
+ 
 
 ### number of people
-dim(month6_barc)
-sum(is.na(month6_barc))
+
+dim(month6_redcap_barc)
+
+month6_redcap_barc = na.omit(month6_redcap_barc)
+
+sum(is.na(month6_redcap_barc))
+
+ 
 
 #follow-up mean score
-month6_barc$Barc_Total = rowSums(month6_barc)
-mean(month6_barc$Barc_Total)
+
+month6_redcap_barc$Barc_Total = rowSums(month6_redcap_barc)
+
+mean_month6_barc = mean(month6_redcap_barc$Barc_Total)
+
+mean_month6_barc
+
+ 
+
+ 
+
+p_change_barc = (mean_month6_barc-mean_base_barc)/mean_base_barc
+
+p_change_barc
+
+ 
+
+barc = data.frame(base_barc = mean_base_barc, month6_barc = mean_month6_barc, p_change_barc = p_change_barc)
+
+barc
+
 ```
-PLC-C mean score decrease (lesser trauma symptoms) (if we want to use this, or we can delete this code)
+
+ 
+
+Obj. H: Achieve 80% client retention rate per 6-month and discharge follow-ups.
+
+Number of enrollees eligible for follow-up that have been seen for 6 month (based on date calculated --> don't count people that have not yet reached reassessment window)
+
+USE SPARS RATE
 
 ```{r}
-#plc base
 
-base_plc = redcap_data[,48:64]
-head(base_plc)
+#currently 41 clients eligible for follow-up, 37 of those seen for follow up
 
-## number of people
-dim(base_plc)
-sum(is.na(base_plc))
+ 
 
-#baseline mean score
-base_plc$Plc_Total = rowSums(base_plc)
-mean(base_plc$Plc_Total)
+retention_rate = 37/41
 
-## PLC follow-up
-month6_plc = redcap_data[,159:175]
-head(month6_plc)
-
-### number of people
-dim(month6_plc)
-sum(is.na(month6_plc))
-
-#follow-up mean score
-month6_plc$Plc_Total = rowSums(month6_plc)
-mean(month6_plc$Plc_Total)
-
-#percent change
-
-p_change_plc = (mean(month6_plc$Plc_Total)-mean(base_plc$Plc_Total))/mean(base_plc$Plc_Total)
-p_change_plc
+retention_rate
 
 ```
 
+ 
+
+ 
+
+Goal IV: Increase permanent housing and other services that support recovery for clients.
+
+ 
+
+ 
+
+Obj. A: Provide housing navigation and CES linkage to 100% of enrollees per 6-month and discharge follow-ups.
+
+Use variable "Svc_Housing" from SPARS (asks about housing services since last NOMS interview)
+
+```{r}
+
+ 
+
+describe.factor(SPARS_wide$Svc_Housing.y)
+
+ 
+
+```
+
+ 
+
+Obj. B: Place 80% of enrollees in permanent housing by 9/29/2023.
+
+Use participant tracker --> number housed/number enrolled
+
+```{r}
+
+#housed enrollees divided by total enrollees
+
+ 
+
+ 
+
+housed_enrollees = 38/50
+
+housed_enrollees
+
+```
+
+ 
+
+Obj. C: As appropriate to their ICPs, assist 100% of enrollees to identify/secure employment per 6-month and discharge follow-ups.
+
+Use "did you receive help getting a job" question from REDCap?
+
+ 
+
+Most people say "no" to this, so I'm not sure if employment typically isnt a main concern for our clients or what
+
+```{r}
+
+month6_job_help = redcap_data$did_you_receive_help_getti
+
+month6_job_help = na.omit(month6_job_help)
+
+sum_month6_job_help = sum(month6_job_help)
+
+sum_month6_job_help
+
+```
+
+ 
+
+Obj. D: Increase enrollment in health insurance, Medicaid, VA, SSI/SSDI, other benefit programs by 80% for clients
+
+in need of/eligible for these benefits by 9/29/2023.
+
+Use Benefits Tracking in REDCap
+
+```{r}
+
+#benefit at base, benefit at month 6, then percent change from base to month 6
+
+ 
+
+#MEDICAID OR MEDICARE
+
+ 
+
+#BASELINE
+
+ 
+
+base_medicaid = redcap_data$medicaid_or_medicare.x
+
+base_medicaid = na.omit(base_medicaid)
+
+sum_base_med = sum(base_medicaid)
+
+ 
+
+#MONTH6
+
+ 
+
+month6_medicaid = redcap_data$medicaid_or_medicare.y
+
+month6_medicaid = na.omit(month6_medicaid)
+
+sum_month6_med = sum(month6_medicaid)
+
+ 
+
+p_change_med = (sum_month6_med - sum_base_med)/sum_base_med
+
+ 
+
+medicaid_or_medicare = data.frame(base = sum_base_med, month6 = sum_month6_med, percentchange = p_change_med)
+
+ 
+
+medicaid_or_medicare
+
+ 
+
+ 
+
+#HIP
+
+ 
+
+#BASELINE
+
+ 
+
+base_hip = redcap_data$healthy_indiana_plan_hip.x
+
+base_hip = na.omit(base_hip)
+
+sum_base_hip = sum(base_hip)
+
+ 
+
+ 
+
+#MONTH6
+
+month6_hip = redcap_data$healthy_indiana_plan_hip.y
+
+month6_hip = na.omit(month6_hip)
+
+sum_month6_hip = sum(month6_hip)
+
+ 
+
+p_change_hip = (sum_month6_hip - sum_base_hip)/sum_base_hip
+
+ 
+
+hip = data.frame(base = sum_base_hip, month6 = sum_month6_hip, percentchange = p_change_hip)
+
+ 
+
+hip
+
+ 
+
+#SSI or SSDI
+
+ 
+
+#BASELINE
+
+ 
+
+base_ssi = redcap_data$ssi_or_ssdi.x
+
+base_ssi = na.omit(base_ssi)
+
+sum_base_ssi = sum(base_ssi)
+
+ 
+
+#MONTH 6
+
+month6_ssi = redcap_data$ssi_or_ssdi.y
+
+month6_ssi = na.omit(month6_ssi)
+
+sum_month6_ssi = sum(month6_ssi)
+
+ 
+
+ 
+
+p_change_ssi = (sum_month6_ssi - sum_base_ssi)/sum_base_ssi
+
+ 
+
+ssi_or_ssdi = data.frame(base = sum_base_ssi, month6 = sum_month6_ssi, percentchange = p_change_ssi)
+
+ 
+
+ssi_or_ssdi
+
+ 
+
+ 
+
+#HUD
+
+ 
+
+#BASELINE
+
+ 
+
+base_hud = redcap_data$hud_or_section_8.x
+
+base_hud = na.omit(base_hud)
+
+sum_base_hud = sum(base_hud)
+
+ 
+
+#MONTH6
+
+ 
+
+month6_hud = redcap_data$hud_or_section_8.y
+
+month6_hud = na.omit(month6_hud)
+
+sum_month6_hud = sum(month6_hud)
+
+ 
+
+p_change_hud = (sum_month6_hud - sum_base_hud)/sum_base_hud
+
+ 
+
+hud = data.frame(base = sum_base_hud, month6 = sum_month6_hud, percentchange = p_change_hud)
+
+ 
+
+hud
+
+ 
+
+ 
+
+#SNAP
+
+ 
+
+#BASE
+
+ 
+
+base_snap = redcap_data$snap_food_stamps.x
+
+base_snap = na.omit(base_snap)
+
+sum_base_snap = sum(base_snap)
+
+ 
+
+#MONTH6
+
+month6_snap = redcap_data$snap_food_stamps.y
+
+month6_snap = na.omit(month6_snap)
+
+sum_month6_snap = sum(month6_snap)
+
+ 
+
+p_change_snap = (sum_month6_snap - sum_base_snap)/sum_base_snap
+
+ 
+
+snap = data.frame(base = sum_base_snap, month6 = sum_month6_snap, percentchange = p_change_snap)
+
+ 
+
+snap
+
+ 
+
+ 
+
+#PERCENT CHANGE OF ALL BENEFITS
+
+ 
+
+benefits_percent_change = data.frame(medicaid_medicare = p_change_med, hip = p_change_hip, ssi_ssdi = p_change_ssi, hud = p_change_hud, snap = p_change_snap)
+
+ 
+
+benefits_percent_change
+
+```
+
+ 
+
+Obj. E: Increased social connectedness among 80% of enrollees per 6-month and discharge follow-ups.
+
+Use social relationships section of SPARS data
+
+variables = Friendships, EnjoyPeople, BelongInCommunity, SupportFromFamily, SupportiveFamilyFriends, GenerallyAccomplishGoal
+
+ 
+
+1 = Strong Disagree
+
+2 = Disagree
+
+4 = Agree
+
+5 = Strongly Agree
+
+ 
+
+Is there a better way to look at this data?
+
+```{r}
+
+#mean and then percent change of each variable
+
+#do rowsum in new data set, %change over all
+
+ 
+
+#Baseline
+
+ 
+
+describe.factor(SPARS_wide$Friendships.x)
+
+describe.factor(SPARS_wide$EnjoyPeople.x)
+
+describe.factor(SPARS_wide$BelongInCommunity.x)
+
+describe.factor(SPARS_wide$SupportFromFamily.x)
+
+describe.factor(SPARS_wide$SupportiveFamilyFriends.x)
+
+ 
+
+#Month6
+
+describe.factor(SPARS_wide$Friendships.y)
+
+describe.factor(SPARS_wide$EnjoyPeople.y)
+
+describe.factor(SPARS_wide$BelongInCommunity.y)
+
+describe.factor(SPARS_wide$SupportFromFamily.y)
+
+describe.factor(SPARS_wide$SupportiveFamilyFriends.y)
+
+ 
+
+#Friendships
+
+Friendships = data.frame(x = SPARS_wide$Friendships.x, y = SPARS_wide$Friendships.y)
+
+Friendships = na.omit(Friendships)
+
+dim(Friendships)
+
+ 
+
+BaseMean = round(mean(Friendships$x),3)
+
+Month6Mean = round(mean(Friendships$y),3)
+
+Friend_change = round((Friendships$y - Friendships$x)/ Friendships$x,3)
+
+ 
+
+Friend_results = data.frame(N = dim(Friendships)[1], BaseMean, Month6Mean, Friend_change)
+
+Friend_results
+
+mean(Friend_change)
+
+ 
+
+#Enjoy People
+
+Enjoy = data.frame(x = SPARS_wide$EnjoyPeople.x, y = SPARS_wide$EnjoyPeople.y)
+
+Enjoy = na.omit(Enjoy)
+
+dim(Enjoy)
+
+ 
+
+BaseMean = round(mean(Enjoy$x),3)
+
+Month6Mean = round(mean(Enjoy$y),3)
+
+Enjoy_change = round((Enjoy$y - Enjoy$x)/ Enjoy$x,3)
+
+ 
+
+Enjoy_results = data.frame(N = dim(Enjoy)[1], BaseMean, Month6Mean, Enjoy_change)
+
+Enjoy_results
+
+mean(Enjoy_change)
+
+ 
+
+#Belong in Community
+
+Belong = data.frame(x = SPARS_wide$BelongInCommunity.x, y = SPARS_wide$BelongInCommunity.y)
+
+Belong = na.omit(Belong)
+
+dim(Belong)
+
+ 
+
+BaseMean = round(mean(Belong$x),3)
+
+Month6Mean = round(mean(Belong$y),3)
+
+Belong_change = round((Belong$y - Belong$x)/ Belong$x,3)
+
+ 
+
+Belong_results = data.frame(N = dim(Belong)[1], BaseMean, Month6Mean, Belong_change)
+
+Belong_results
+
+mean(Enjoy_change)
+
+ 
+
+#Support form Family
+
+Support = data.frame(x = SPARS_wide$SupportFromFamily.x, y = SPARS_wide$SupportFromFamily.y)
+
+Support = na.omit(Support)
+
+dim(Support)
+
+ 
+
+BaseMean = round(mean(Support$x),3)
+
+Month6Mean = round(mean(Support$y),3)
+
+Support_change = round((Support$y - Support$x)/ Support$x,3)
+
+ 
+
+Support_results = data.frame(N = dim(Support)[1], BaseMean, Month6Mean, Support_change)
+
+Support_results
+
+mean(Support_change)
+
+ 
+
+#Supportive Family and Friends
+
+Supportive = data.frame(x = SPARS_wide$SupportiveFamilyFriends.x, y = SPARS_wide$SupportiveFamilyFriends.y)
+
+Supportive = na.omit(Supportive)
+
+dim(Supportive)
+
+ 
+
+BaseMean = round(mean(Supportive$x),3)
+
+Month6Mean = round(mean(Supportive$y),3)
+
+Supportive_change = round((Supportive$y - Supportive$x)/ Supportive$x,3)
+
+ 
+
+Supportive_results = data.frame(N = dim(Supportive)[1], BaseMean, Month6Mean, Supportive_change)
+
+Supportive_results
+
+mean(Supportive_change)
+
+ 
+
+#Overall
+
+Social.x = data.frame(ID = SPARS_wide$ConsumerID, Friends.x=SPARS_wide$Friendships.x, Family.x=SPARS_wide$SupportFromFamily.x, Belong.x=SPARS_wide$BelongInCommunity.x, Supportive.x=SPARS_wide$SupportiveFamilyFriends.x, Enjoy.x=SPARS_wide$EnjoyPeople.x)
+
+Social.x = na.omit(Social.x)
+
+ 
+
+Social.y = data.frame(ID = SPARS_wide$ConsumerID, Friends.y=SPARS_wide$Friendships.y, Family.y=SPARS_wide$SupportFromFamily.y, Belong.y=SPARS_wide$BelongInCommunity.y, Supportive.y=SPARS_wide$SupportiveFamilyFriends.y, Enjoy.y=SPARS_wide$EnjoyPeople.y)
+
+Social.y = na.omit(Social.y)
+
+ 
+
+Social.x$sum = rowSums(Social.x[, -1])
+
+Social.y$sum = rowSums(Social.y[, -1])
+
+ 
+
+Social = merge(Social.x, Social.y, by = "ID", all.y = TRUE)
+
+SocialBaseMean = round(mean(Social.x$sum),3)
+
+SocialMonth3Mean = round(mean(Social.y$sum),3)
+
+Social_p_change = round((SocialMonth3Mean - SocialBaseMean)/ SocialBaseMean,3)
+
+ 
+
+Social_results = data.frame(N = dim(Social)[1], SocialBaseMean, SocialMonth3Mean, Social_p_change)
+
+Social_results
+
+```
+
+ 
+
+Obj. F: Improve independent living skills among 80% of enrollees per 6-month and discharge follow-ups.
+
+ 
+
+Use variable "CapableManagingHealthCareNeeds" from SPARS
+
+ 
+
+" I feel capable of managing my health care needs..."
+
+ 
+
+1 = On my own most of the time
+
+2 = On my own some of the time and with support from
+
+others some of the time
+
+3 = With support from others most of the time
+
+4 = Rarely or never
+
+```{r}
+
+#do same thing as social connectedness part
+
+#OR use generally accomplish what I set out to do
+
+ 
+
+#independent living
+
+Capable = data.frame(x = SPARS_wide$CapableManagingHealthCareNeeds.x, y = SPARS_wide$CapableManagingHealthCareNeeds.y)
+
+Supportive = na.omit(Capable)
+
+dim(Capable)
+
+ 
+
+BaseMean = round(mean(Capable$x),3)
+
+Month6Mean = round(mean(Capable$y),3)
+
+Capable_change = round((Capable$y - Capable$x)/ Capable$x,3)
+
+Capable_results = data.frame(N = dim(Capable)[1], BaseMean, Month6Mean, Capable_change)
+
+Capable_results
+
+mean(Capable_change)
+
+ 
+
+#Generally Accomplish living
+
+Accomplish = data.frame(x = SPARS_wide$GenerallyAccomplishGoal.x, y = SPARS_wide$GenerallyAccomplishGoal.y)
+
+Accomplish  = na.omit(Accomplish)
+
+dim(Accomplish )
+
+ 
+
+BaseMean = round(mean(Accomplish$x),3)
+
+Month6Mean = round(mean(Accomplish$y),3)
+
+Accomplish_change = round((Accomplish$y - Accomplish$x)/ Accomplish$x,3)
+
+Accomplish_results = data.frame(N = dim(Accomplish)[1], BaseMean, Month6Mean, Accomplish_change)
+
+Accomplish_results
+
+mean(Accomplish_change)
+
+ 
+
+#Overall
+
+Independent.x = data.frame(ID = SPARS_wide$ConsumerID, Capable.x=SPARS_wide$CapableManagingHealthCareNeeds.x, Accomplish=SPARS_wide$GenerallyAccomplishGoal.x)
+
+Independent.x = na.omit(Independent.x)
+
+ 
+
+Independent.y = data.frame(ID = SPARS_wide$ConsumerID, Capable.x=SPARS_wide$CapableManagingHealthCareNeeds.y, Accomplish=SPARS_wide$GenerallyAccomplishGoal.y)
+
+Independent.y = na.omit(Independent.y)
+
+ 
+
+Independent.x$sum = rowSums(Independent.x[, -1])
+
+Independent.y$sum = rowSums(Independent.y[, -1])
+
+ 
+
+Independent = merge(Independent.x, Independent.y, by = "ID", all.y = TRUE)
+
+IndependentBaseMean = round(mean(Independent.x$sum),3)
+
+IndependentMonth3Mean = round(mean(Independent.y$sum),3)
+
+Independent_p_change = round((IndependentMonth3Mean -IndependentBaseMean)/ IndependentBaseMean,3)
+
+ 
+
+Independent_results = data.frame(N = dim(Independent)[1], IndependentBaseMean, IndependentMonth3Mean, Independent_p_change)
+
+Independent_results
