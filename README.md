@@ -1330,7 +1330,7 @@ BaseMean = round(mean(Accomplish$x),3)
 
 Month6Mean = round(mean(Accomplish$y),3)
 
-Accomplish_change = round((Accomplish$y - Accomplish$x)/ Accomplish$x,3)
+Accomplish_change = round((Month6Mean - BaseMean)/ Month6Mean,3)
 
 Accomplish_results = data.frame(N = dim(Accomplish)[1], BaseMean, Month6Mean, Accomplish_change)
 
@@ -1373,3 +1373,20 @@ Independent_p_change = round((IndependentMonth3Mean -IndependentBaseMean)/ Indep
 Independent_results = data.frame(N = dim(Independent)[1], IndependentBaseMean, IndependentMonth3Mean, Independent_p_change)
 
 Independent_results
+```
+Demographics
+Female = 2
+11 = LESS THAN 12TH GRADE
+12 = 12TH GRADE /HIGH SCHOOL DIPLOMA/
+EQUIVALENT (GED)
+13 = VOC/TECH DIPLOMA
+14 = SOME COLLEGE OR UNIVERSITY
+15 = BACHELOR'S DEGREE (BA, BS)
+16 = GRADUATE WORK/GRADUATE DEGREE
+
+```{r}
+describe.factor(SPARS_wide$Gender.x)
+describe.factor(SPARS_wide$Education.x)
+
+```
+
