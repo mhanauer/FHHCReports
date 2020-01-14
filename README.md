@@ -74,7 +74,7 @@ dim(SPARS_data)
 
 ## SET DATE FOR ALL DATA IN GRANT YEAR (Y1 ended Sept 30)
 
-SPARS_data = subset(SPARS_data, SPARS_data$InterviewDate < "2019/10/01")
+#SPARS_data = subset(SPARS_data, SPARS_data$InterviewDate < "2019/12/01")
 
  
 
@@ -116,44 +116,29 @@ dim(base_redcap)
 
  
 
- 
-
 #CHANGE DATE to correct year and stuff
 
-base_redcap = subset(redcap_date_base, InterviewDate < "2020-01-01")
+base_redcap = subset(redcap_date_base, InterviewDate < "2021-01-01")
 
 dim(base_redcap)
 
  
 
+#CHANGE "id" and "record_id" to "id_fhhc" so you can merge based on that variable
  
 
-#CHANGE "id" column name in month6 to "record_id" so you can merge based on that variable (did it manually because was struggling to rename column with name that already existed)
+colnames(base_redcap)[1] = "id_fhhc"
+colnames(month6_redcap)[5] = "id_fhhc"
+dim(month6_redcap)
+base_redcap$id
 
- 
-
- 
-
- 
-
-base_redcap$record_id
-
-month6_redcap$record_id
-
- 
-
- 
-
- 
-
-redcap_data = merge(base_redcap, month6_redcap, by = "record_id", all.y = TRUE)
+redcap_data = merge(base_redcap, month6_redcap, by = "id_fhhc", all.y = TRUE)
 
 head(redcap_data)
 
 dim(redcap_data)
 
  
-
 ```
 
  
@@ -322,51 +307,61 @@ Cannabis_Use
 
 describe.factor(SPARS_wide$Tobacco_Use.x)
 
- 
+
+tob_abs_base = ifelse(SPARS_wide$Tobacco_Use.x == 1, 1 ,0) 
+tob_abs_n_base = sum(tob_abs_base)
 
 #TOBACCO USE at MONTH6
 
- 
 
 describe.factor(SPARS_wide$Tobacco_Use.y)
 
- 
+tob_abs_month6 = ifelse(SPARS_wide$Tobacco_Use.y == 1, 1, 0) 
+tob_abs_n_month6 = sum(tob_abs_month6)
 
- 
+p_change_tob_abs = (mean(tob_abs_month6) -  mean(tob_abs_base)) / mean(tob_abs_base)
+
+tob_abs_results  = round(data.frame(tob_abs_base = mean(tob_abs_base), tob_abs_n_base, tob_abs_month6 = mean(tob_abs_month6), tob_abs_n_month6, p_change_tob_abs),2) 
+tob_abs_results
 
 #AlCOHOL USE at BASELINE
 
- 
-
 describe.factor(SPARS_wide$Alcohol_Use.x)
 
- 
+alc_abs_base = ifelse(SPARS_wide$Alcohol_Use.x == 1, 1 ,0) 
+alc_abs_n_base = sum(alc_abs_base)
+#Alcohol USE at MONTH6
 
- 
-
-#ALCOHOL USE at MONTH6
-
- 
 
 describe.factor(SPARS_wide$Alcohol_Use.y)
 
- 
+alc_abs_month6 = ifelse(SPARS_wide$Alcohol_Use.y == 1, 1, 0) 
+alc_abs_n_month6 = sum(alc_abs_month6)
+
+p_change_alc_abs = (mean(alc_abs_month6) -  mean(alc_abs_base)) / mean(alc_abs_base)
+
+alc_abs_results  = round(data.frame(alc_abs_base = mean(alc_abs_base), alc_abs_n_base, alc_abs_month6 = mean(alc_abs_month6), alc_abs_n_month6, p_change_alc_abs),2) 
+alc_abs_results
 
  
-
-#CANNABIS USE at BASELINE
-
- 
+#Cannabis_Use USE at BASELINE
 
 describe.factor(SPARS_wide$Cannabis_Use.x)
 
- 
+can_abs_base = ifelse(SPARS_wide$Cannabis_Use.x == 1, 1 ,0) 
+can_abs_n_base = sum(can_abs_base)
+#Cannabis_Use USE at MONTH6
 
- 
-
-#CANNABIS USE at MONTH6
 
 describe.factor(SPARS_wide$Cannabis_Use.y)
+
+can_abs_month6 = ifelse(SPARS_wide$Cannabis_Use.y == 1, 1, 0) 
+can_abs_n_month6 = sum(can_abs_month6)
+
+p_change_can_abs = (mean(can_abs_month6) -  mean(can_abs_base)) / mean(can_abs_base)
+
+can_abs_results  = round(data.frame(can_abs_base = mean(can_abs_base), can_abs_n_base, can_abs_month6 = mean(can_abs_month6), can_abs_n_month6, p_change_can_abs),2) 
+can_abs_results
 
 ```
 
@@ -696,7 +691,7 @@ mean_base_barc = mean(base_redcap_barc$Barc_Total)
 
 ## Barc follow-up
 
-month6_redcap_barc = month6_redcap[,83:92]
+month6_redcap_barc = month6_redcap[,84:93]
 
 head(month6_redcap_barc)
 
@@ -743,21 +738,7 @@ Obj. H: Achieve 80% client retention rate per 6-month and discharge follow-ups.
 Number of enrollees eligible for follow-up that have been seen for 6 month (based on date calculated --> don't count people that have not yet reached reassessment window)
 
 USE SPARS RATE
-
-```{r}
-
-#currently 41 clients eligible for follow-up, 37 of those seen for follow up
-
  
-
-retention_rate = 37/41
-
-retention_rate
-
-```
-
- 
-
  
 
 Goal IV: Increase permanent housing and other services that support recovery for clients.
@@ -777,7 +758,6 @@ Use variable "Svc_Housing" from SPARS (asks about housing services since last NO
 describe.factor(SPARS_wide$Svc_Housing.y)
 
  
-
 ```
 
  
@@ -794,7 +774,7 @@ Use participant tracker --> number housed/number enrolled
 
  
 
-housed_enrollees = 38/50
+housed_enrollees = 47/64
 
 housed_enrollees
 
@@ -1128,7 +1108,7 @@ BaseMean = round(mean(Friendships$x),3)
 
 Month6Mean = round(mean(Friendships$y),3)
 
-Friend_change = round((Friendships$y - Friendships$x)/ Friendships$x,3)
+Friend_change = round(( Month6Mean- BaseMean)/ BaseMean,3)
 
  
 
@@ -1154,7 +1134,7 @@ BaseMean = round(mean(Enjoy$x),3)
 
 Month6Mean = round(mean(Enjoy$y),3)
 
-Enjoy_change = round((Enjoy$y - Enjoy$x)/ Enjoy$x,3)
+Enjoy_change = round((Month6Mean - BaseMean)/ BaseMean,3)
 
  
 
@@ -1180,7 +1160,7 @@ BaseMean = round(mean(Belong$x),3)
 
 Month6Mean = round(mean(Belong$y),3)
 
-Belong_change = round((Belong$y - Belong$x)/ Belong$x,3)
+Belong_change = round((mean(Belong$y) - mean(Belong$x))/ mean(Belong$x,3))
 
  
 
@@ -1326,7 +1306,7 @@ BaseMean = round(mean(Capable$x),3)
 
 Month6Mean = round(mean(Capable$y),3)
 
-Capable_change = round((Capable$y - Capable$x)/ Capable$x,3)
+Capable_change = round((Month6Mean - BaseMean)/ BaseMean,3)
 
 Capable_results = data.frame(N = dim(Capable)[1], BaseMean, Month6Mean, Capable_change)
 
