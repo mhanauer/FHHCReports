@@ -1385,8 +1385,21 @@ EQUIVALENT (GED)
 16 = GRADUATE WORK/GRADUATE DEGREE
 
 ```{r}
+SPARS_data_base = subset(SPARS_data,InterviewType_07==1)
+dim(SPARS_data_base)
+SPARS_data_q4 = subset(SPARS_data_base, InterviewDate < "2019-10-01")
+dim(SPARS_data_q4)
+describe.factor(SPARS_data_q4$RaceAlaskaNative)
+describe.factor(SPARS_data_q4$RaceAmericanIndian)
+describe.factor(SPARS_data_q4$RaceAmericanIndian)
+describe.factor(SPARS_data_q4$RaceAsian)
+describe.factor(SPARS_data_q4$RaceBlack)
+describe.factor(SPARS_data_q4$RaceNativeHawaiian)
+describe.factor(SPARS_data_q4$RaceWhite)
+describe.factor(SPARS_data_q4$HispanicLatino)
+
 describe.factor(SPARS_wide$Gender.x)
 describe.factor(SPARS_wide$Education.x)
-
+describe.factor(SPARS_data$RaceWhite)
 ```
 
