@@ -74,7 +74,7 @@ dim(SPARS_data)
 
 ## SET DATE FOR ALL DATA IN GRANT YEAR (Y1 ended Sept 30)
 
-#SPARS_data = subset(SPARS_data, SPARS_data$InterviewDate < "2019/12/01")
+SPARS_data = subset(SPARS_data, SPARS_data$InterviewDate < "2019/12/01")
 
  
 
@@ -190,6 +190,10 @@ mean(month6_redcap_depression$PHQ_9_Total)
 p_change_phq =  (mean(month6_redcap_depression$PHQ_9_Total)-mean(base_redcap_depression$PHQ_9_Total))/mean(base_redcap_depression$PHQ_9_Total)
 
 p_change_phq
+mean(base_redcap_depression$PHQ_9_Total)
+mean(month6_redcap_depression$PHQ_9_Total)
+dim(base_redcap_depression)
+
 
  
 
@@ -265,6 +269,8 @@ pchange_anx = (mean(month6_redcap_anxiety$Gad_7_Total-mean(base_redcap_anxiety$G
 
 mental_health_percent_change = data.frame(depression = p_change_phq, anxiety = pchange_anx)
 
+mean(base_redcap_anxiety$Gad_7_Total)
+mean(month6_redcap_anxiety$Gad_7_Total)
 mental_health_percent_change
 
 ```
@@ -1384,10 +1390,19 @@ EQUIVALENT (GED)
 15 = BACHELOR'S DEGREE (BA, BS)
 16 = GRADUATE WORK/GRADUATE DEGREE
 
+5 = Age 26 to 34 years old
+6 = Age 35 to 44 years old
+7 = Age 45 to 54 years old
+8 = Age 55 to 64 years old
+9 = Age 65 to 74 years old
+10 = Age 75 to 84 years old
+11 = Age 85 to 94 years old
+12 = Age 95 years or older
+
 ```{r}
 SPARS_data_base = subset(SPARS_data,InterviewType_07==1)
 dim(SPARS_data_base)
-SPARS_data_q4 = subset(SPARS_data_base, InterviewDate < "2019-10-01")
+SPARS_data_q4 = subset(SPARS_data_base, InterviewDate < "2020-01-01")
 dim(SPARS_data_q4)
 describe.factor(SPARS_data_q4$RaceAlaskaNative)
 describe.factor(SPARS_data_q4$RaceAmericanIndian)
@@ -1401,5 +1416,11 @@ describe.factor(SPARS_data_q4$HispanicLatino)
 describe.factor(SPARS_wide$Gender.x)
 describe.factor(SPARS_wide$Education.x)
 describe.factor(SPARS_data$RaceWhite)
+mean(SPARS_data$Agegroup)
+35+.619048*(44-35)
+
+
+describe.factor(SPARS_data$DiagnosisOne)
+
 ```
 
