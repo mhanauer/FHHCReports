@@ -96,6 +96,11 @@ dim(SPARS_wide)
 
 SPARS_wide$ConsumerID == SPARS_month6$ConsumerID
 
+
+### Make sure this matches the current enrollments on the tracker
+SPARS_data_base = subset(SPARS_data,InterviewType_07==1)
+dim(SPARS_data_base)
+
 ```
 
  
@@ -269,6 +274,13 @@ pchange_anx = (mean(month6_redcap_anxiety$Gad_7_Total-mean(base_redcap_anxiety$G
 
 mental_health_percent_change = data.frame(depression = p_change_phq, anxiety = pchange_anx)
 
+
+
+p_change_phq
+mean(base_redcap_depression$PHQ_9_Total)
+mean(month6_redcap_depression$PHQ_9_Total)
+dim(base_redcap_depression)
+
 mean(base_redcap_anxiety$Gad_7_Total)
 mean(month6_redcap_anxiety$Gad_7_Total)
 mental_health_percent_change
@@ -368,6 +380,19 @@ p_change_can_abs = (mean(can_abs_month6) -  mean(can_abs_base)) / mean(can_abs_b
 
 can_abs_results  = round(data.frame(can_abs_base = mean(can_abs_base), can_abs_n_base, can_abs_month6 = mean(can_abs_month6), can_abs_n_month6, p_change_can_abs),2) 
 can_abs_results
+
+
+## GSR
+sub_base_mean = mean(tob_abs_results$tob_abs_base, alc_abs_results$alc_abs_base, can_abs_results$can_abs_base)
+sub_base_mean
+
+sub_month_6_mean = mean(tob_abs_results$tob_abs_month6, alc_abs_results$alc_abs_month6, can_abs_results$can_abs_month6)
+sub_month_6_mean
+
+
+p_change_sub = (sub_month_6_mean-sub_base_mean)/sub_base_mean
+p_change_sub
+
 
 ```
 
@@ -554,6 +579,16 @@ p_change_ER_hosp
 ER_hosp = data.frame(base_ER_hosp = base_redcap_er_hosp, month6_ER_hosp = month6_redcap_er_hosp, percentchange = p_change_ER_hosp)
 
 ER_hosp
+
+#GSR
+sum(SPARS_wide_hospital$base_redcap_Hosp)
+#sum month 6
+sum(SPARS_wide_hospital$month6_redcap_Hosp)
+#base
+sum(SPARS_wide_ER$base_redcap_ER)
+#Follow-up
+sum(SPARS_wide_ER$month6_redcap_ER)
+
 
 ```
 
@@ -1406,7 +1441,6 @@ SPARS_data_q4 = subset(SPARS_data_base, InterviewDate < "2020-01-01")
 dim(SPARS_data_q4)
 describe.factor(SPARS_data_q4$RaceAlaskaNative)
 describe.factor(SPARS_data_q4$RaceAmericanIndian)
-describe.factor(SPARS_data_q4$RaceAmericanIndian)
 describe.factor(SPARS_data_q4$RaceAsian)
 describe.factor(SPARS_data_q4$RaceBlack)
 describe.factor(SPARS_data_q4$RaceNativeHawaiian)
@@ -1415,12 +1449,11 @@ describe.factor(SPARS_data_q4$HispanicLatino)
 
 describe.factor(SPARS_wide$Gender.x)
 describe.factor(SPARS_wide$Education.x)
-describe.factor(SPARS_data$RaceWhite)
 mean(SPARS_data$Agegroup)
 35+.619048*(44-35)
-
-
 describe.factor(SPARS_data$DiagnosisOne)
+
+165/5
 
 ```
 
