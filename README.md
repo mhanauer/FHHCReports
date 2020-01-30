@@ -194,14 +194,9 @@ mean(month6_redcap_depression$PHQ_9_Total)
 
 p_change_phq =  (mean(month6_redcap_depression$PHQ_9_Total)-mean(base_redcap_depression$PHQ_9_Total))/mean(base_redcap_depression$PHQ_9_Total)
 
-p_change_phq
-mean(base_redcap_depression$PHQ_9_Total)
-mean(month6_redcap_depression$PHQ_9_Total)
-dim(base_redcap_depression)
-
 
  
-
+##################################################
  
 
 #Anxiety base_redcap
@@ -250,40 +245,14 @@ sum(is.na(month6_redcap_anxiety))
 
 month6_redcap_anxiety$Gad_7_Total = rowSums(month6_redcap_anxiety)
 
-mean(month6_redcap_anxiety$Gad_7_Total)
-
- 
-
-## Final results
-
-dim(base_redcap_anxiety)[1]
-
- 
-
- 
-
- 
 
 anx_results = data.frame(dep_mean_base_redcap = mean(base_redcap_anxiety$Gad_7_Total), dep_mean_month6_redcapmean = mean(month6_redcap_anxiety$Gad_7_Total), n = dim(base_redcap_anxiety)[1], pchange_anx = (mean(month6_redcap_anxiety$Gad_7_Total-mean(base_redcap_anxiety$Gad_7_Total))/mean(base_redcap_anxiety$Gad_7_Total)))
-
 anx_results
-
-pchange_anx = (mean(month6_redcap_anxiety$Gad_7_Total-mean(base_redcap_anxiety$Gad_7_Total))/mean(base_redcap_anxiety$Gad_7_Total))
-
  
 
-mental_health_percent_change = data.frame(depression = p_change_phq, anxiety = pchange_anx)
+phq_results = data.frame(mean_phq_base = mean(base_redcap_depression$PHQ_9_Total), mean_phq_month6 = mean(month6_redcap_depression$PHQ_9_Total), p_change_phq , n = dim(base_redcap_depression)[1])
+phq_results
 
-
-
-p_change_phq
-mean(base_redcap_depression$PHQ_9_Total)
-mean(month6_redcap_depression$PHQ_9_Total)
-dim(base_redcap_depression)
-
-mean(base_redcap_anxiety$Gad_7_Total)
-mean(month6_redcap_anxiety$Gad_7_Total)
-mental_health_percent_change
 
 ```
 
@@ -393,7 +362,8 @@ sub_month_6_mean
 p_change_sub = (sub_month_6_mean-sub_base_mean)/sub_base_mean
 p_change_sub
 
-
+sub_results = data.frame(sub_base_mean, sub_month_6_mean , p_change_sub)
+sub_results
 ```
 
  
@@ -408,9 +378,6 @@ Use PLC-C mean scores
 
 #plc base_redcap
 
- 
-
- 
 
 base_redcap_plc = redcap_data[,50:66]
 
@@ -506,6 +473,8 @@ sum(SPARS_wide_ER$base_redcap_ER)
 
 sum(SPARS_wide_ER$month6_redcap_ER)
 
+
+er_results = data.frame(base_er = sum(SPARS_wide_ER$base_redcap_ER), month_6_er = sum(SPARS_wide_ER$month6_redcap_ER), p_change_er = (sum(SPARS_wide_ER$month6_redcap_ER)-sum(SPARS_wide_ER$base_redcap_ER))/sum(SPARS_wide_ER$base_redcap_ER))
  
 
 SPARS_wide_ER_complete
@@ -544,9 +513,7 @@ sum(SPARS_wide_hospital$month6_redcap_Hosp)
 
  
 
- 
 
- 
 
 #sum hospitalizations for mental health and ER visits
 
@@ -572,23 +539,24 @@ p_change_ER_hosp = (month6_redcap_er_hosp- base_redcap_er_hosp)/base_redcap_er_h
 
 p_change_ER_hosp
 
- 
 
- 
 
 ER_hosp = data.frame(base_ER_hosp = base_redcap_er_hosp, month6_ER_hosp = month6_redcap_er_hosp, percentchange = p_change_ER_hosp)
 
 ER_hosp
 
-#GSR
-sum(SPARS_wide_hospital$base_redcap_Hosp)
-#sum month 6
-sum(SPARS_wide_hospital$month6_redcap_Hosp)
-#base
-sum(SPARS_wide_ER$base_redcap_ER)
-#Follow-up
-sum(SPARS_wide_ER$month6_redcap_ER)
 
+er_results = data.frame(base_er = sum(SPARS_wide_ER$base_redcap_ER), month_6_er = sum(SPARS_wide_ER$month6_redcap_ER), p_change_er = (sum(SPARS_wide_ER$month6_redcap_ER)-sum(SPARS_wide_ER$base_redcap_ER))/sum(SPARS_wide_ER$base_redcap_ER))
+
+er_results
+
+ 
+hosp_results = data.frame(hosp_base = sum(SPARS_wide_hospital$base_redcap_Hosp), hosp_month6 = sum(SPARS_wide_hospital$month6_redcap_Hosp), p_change_hosp = (sum(SPARS_wide_hospital$month6_redcap_Hosp)-sum(SPARS_wide_hospital$base_redcap_Hosp))/sum(SPARS_wide_hospital$base_redcap_Hosp))
+hosp_results
+
+ER_hosp = data.frame(base_ER_hosp = base_redcap_er_hosp, month6_ER_hosp = month6_redcap_er_hosp, percentchange = p_change_ER_hosp)
+
+ER_hosp
 
 ```
 
@@ -807,19 +775,6 @@ Obj. B: Place 80% of enrollees in permanent housing by 9/29/2023.
 
 Use participant tracker --> number housed/number enrolled
 
-```{r}
-
-#housed enrollees divided by total enrollees
-
- 
-
- 
-
-housed_enrollees = 47/64
-
-housed_enrollees
-
-```
 
  
 
@@ -1415,45 +1370,6 @@ Independent_results = data.frame(N = dim(Independent)[1], IndependentBaseMean, I
 
 Independent_results
 ```
-Demographics
-Female = 2
-11 = LESS THAN 12TH GRADE
-12 = 12TH GRADE /HIGH SCHOOL DIPLOMA/
-EQUIVALENT (GED)
-13 = VOC/TECH DIPLOMA
-14 = SOME COLLEGE OR UNIVERSITY
-15 = BACHELOR'S DEGREE (BA, BS)
-16 = GRADUATE WORK/GRADUATE DEGREE
 
-5 = Age 26 to 34 years old
-6 = Age 35 to 44 years old
-7 = Age 45 to 54 years old
-8 = Age 55 to 64 years old
-9 = Age 65 to 74 years old
-10 = Age 75 to 84 years old
-11 = Age 85 to 94 years old
-12 = Age 95 years or older
 
-```{r}
-SPARS_data_base = subset(SPARS_data,InterviewType_07==1)
-dim(SPARS_data_base)
-SPARS_data_q4 = subset(SPARS_data_base, InterviewDate < "2020-01-01")
-dim(SPARS_data_q4)
-describe.factor(SPARS_data_q4$RaceAlaskaNative)
-describe.factor(SPARS_data_q4$RaceAmericanIndian)
-describe.factor(SPARS_data_q4$RaceAsian)
-describe.factor(SPARS_data_q4$RaceBlack)
-describe.factor(SPARS_data_q4$RaceNativeHawaiian)
-describe.factor(SPARS_data_q4$RaceWhite)
-describe.factor(SPARS_data_q4$HispanicLatino)
-
-describe.factor(SPARS_wide$Gender.x)
-describe.factor(SPARS_wide$Education.x)
-mean(SPARS_data$Agegroup)
-35+.619048*(44-35)
-describe.factor(SPARS_data$DiagnosisOne)
-
-165/5
-
-```
 
