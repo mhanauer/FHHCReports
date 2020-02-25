@@ -74,7 +74,7 @@ dim(SPARS_data)
 
 ## SET DATE FOR ALL DATA IN GRANT YEAR (Y1 ended Sept 30)
 
-SPARS_data = subset(SPARS_data, SPARS_data$InterviewDate < "2019/12/01")
+SPARS_data = subset(SPARS_data, SPARS_data$InterviewDate < "2020-02-24")
 
  
 
@@ -100,6 +100,7 @@ SPARS_wide$ConsumerID == SPARS_month6$ConsumerID
 ### Make sure this matches the current enrollments on the tracker
 SPARS_data_base = subset(SPARS_data,InterviewType_07==1)
 dim(SPARS_data_base)
+dim(SPARS_base)
 
 ```
 
@@ -123,7 +124,7 @@ dim(base_redcap)
 
 #CHANGE DATE to correct year and stuff
 
-base_redcap = subset(redcap_date_base, InterviewDate < "2021-01-01")
+base_redcap = subset(redcap_date_base, InterviewDate < "2020-02-24")
 
 dim(base_redcap)
 
@@ -143,7 +144,6 @@ head(redcap_data)
 
 dim(redcap_data)
 
- 
 ```
 
  
@@ -737,7 +737,6 @@ p_change_barc
 barc = data.frame(base_barc = mean_base_barc, month6_barc = mean_month6_barc, p_change_barc = p_change_barc)
 
 barc
-
 ```
 
  
