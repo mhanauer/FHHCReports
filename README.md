@@ -814,11 +814,14 @@ Use Benefits Tracking in REDCap
 
 #BASELINE
 
- 
+medicaid_all = redcap_data[c("medicaid_or_medicare.x", "medicaid_or_medicare.y")] 
+medicaid_all = na.omit(medicaid_all)
+# n 
+dim(medicaid_all)[1]
 
-base_medicaid = redcap_data$medicaid_or_medicare.x
+base_medicaid = medicaid_all$medicaid_or_medicare.x
 
-base_medicaid = na.omit(base_medicaid)
+base_medicaid = base_medicaid
 
 sum_base_med = sum(base_medicaid)
 
@@ -828,9 +831,9 @@ sum_base_med = sum(base_medicaid)
 
  
 
-month6_medicaid = redcap_data$medicaid_or_medicare.y
+month6_medicaid = medicaid_all$medicaid_or_medicare.y
 
-month6_medicaid = na.omit(month6_medicaid)
+month6_medicaid = month6_medicaid
 
 sum_month6_med = sum(month6_medicaid)
 
@@ -851,14 +854,17 @@ medicaid_or_medicare
  
 
 #HIP
+hip_all = redcap_data[c("healthy_indiana_plan_hip.x", "healthy_indiana_plan_hip.y")] 
+hip_all = na.omit(hip_all)
 
- 
+# n
+dim(hip_all)
 
 #BASELINE
 
  
 
-base_hip = redcap_data$healthy_indiana_plan_hip.x
+base_hip = hip_all$healthy_indiana_plan_hip.x
 
 base_hip = na.omit(base_hip)
 
@@ -870,7 +876,7 @@ sum_base_hip = sum(base_hip)
 
 #MONTH6
 
-month6_hip = redcap_data$healthy_indiana_plan_hip.y
+month6_hip = hip_all$healthy_indiana_plan_hip.y
 
 month6_hip = na.omit(month6_hip)
 
@@ -896,8 +902,10 @@ hip
 
 #BASELINE
 
- 
-
+ssi_all = redcap_data[c("ssi_or_ssdi.x", "ssi_or_ssdi.y")]
+ssi_all = na.omit(ssi_all)
+#n
+dim(ssi_all)
 base_ssi = redcap_data$ssi_or_ssdi.x
 
 base_ssi = na.omit(base_ssi)
@@ -905,12 +913,13 @@ base_ssi = na.omit(base_ssi)
 sum_base_ssi = sum(base_ssi)
 
  
-
+length(base_ssi)
 #MONTH 6
 
 month6_ssi = redcap_data$ssi_or_ssdi.y
 
 month6_ssi = na.omit(month6_ssi)
+length(month6_ssi)
 
 sum_month6_ssi = sum(month6_ssi)
 
@@ -938,8 +947,10 @@ ssi_or_ssdi
 
 #BASELINE
 
- 
-
+hud_all =  redcap_data[c("hud_or_section_8.x", "hud_or_section_8.y")]
+hud_all = na.omit(hud_all)
+#n
+dim(hud_all)
 base_hud = redcap_data$hud_or_section_8.x
 
 base_hud = na.omit(base_hud)
@@ -980,8 +991,11 @@ hud
 
 #BASE
 
- 
+snap_all =  redcap_data[c("snap_food_stamps.x", "snap_food_stamps.y")]
+snap_all = na.omit(snap_all)
 
+#n
+dim(snap_all)
 base_snap = redcap_data$snap_food_stamps.x
 
 base_snap = na.omit(base_snap)
@@ -1366,7 +1380,7 @@ Independent_results = data.frame(N = dim(Independent)[1], IndependentBaseMean, I
 
 Independent_results
 ```
-Goal V 
+Goal V and Spars Demos
 Demos and top diagnoses
 59 = F33 – Major depressive disorder, recurrent
 
@@ -1386,11 +1400,36 @@ Demos and top diagnoses
 15 = BACHELOR'S DEGREE (BA, BS)
 16 = GRADUATE WORK/GRADUATE DEGREE
 
+2 = Age 10 to 12 years old
+3 = Age 13 to 15 years old
+4 = Age 16 to 25 years old
+5 = Age 26 to 34 years old
+6 = Age 35 to 44 years old
+7 = Age 45 to 54 years old
+8 = Age 55 to 64 years old
+9 = Age 65 to 74 years old
+10 = Age 75 to 84 years old
+11 = Age 85 to 94 years old
+12 = Age 95 years or older
+
+
 ```{r}
 describe.factor(SPARS_base$Gender)
+
 describe.factor(SPARS_base$DiagnosisOne)
 
+describe.factor(SPARS_base$RaceWhite)
+describe.factor(SPARS_base$RaceBlack)
+describe.factor(SPARS_base$HispanicLatino)
+describe.factor(SPARS_base$RaceAsian)
+
+
 describe.factor(SPARS_base$Education)
+describe.factor(SPARS_base$Agegroup)
+SPARS_base$DOB = mdy(SPARS_base$DOB)
+age =  (SPARS_base$InterviewDate - SPARS_base$DOB ) /365
+mean(age) 
+sd(age)
 37.00+16
 46.25+20
 
