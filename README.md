@@ -38,7 +38,7 @@ Working directory
 
 ```{r}
 
-setwd("S:/Indiana Research & Evaluation/FHHC Homelessness/Data and QPR/YearlyReports")
+setwd("S:/Indiana Research & Evaluation/FHHC Homelessness/Data and QPR")
 
 base_redcap = read.csv("base.csv", header = TRUE, na.strings = c(-99, -98, -97, " "))
 
@@ -46,10 +46,8 @@ month6_redcap = read.csv("month6.csv", header = TRUE, na.strings = c(-99, -98, -
 
 SPARS_data = read.csv("FHHC.csv", header = TRUE, na.strings = c(-99, -98, -97, -1, -4, -5, -7, -9, -2, -6, -8, " "))
 
+
 ```
-
- 
-
 Matched Pairs in SPARS Data (base and month 6)
 
  
@@ -71,23 +69,21 @@ SPARS_data$InterviewDate = mdy(SPARS_data$InterviewDate)
 dim(SPARS_data)
 
  
-
-## SET DATE FOR ALL DATA IN GRANT YEAR (Y1 ended Sept 30)
-
-SPARS_data = subset(SPARS_data, SPARS_data$InterviewDate < "2020-02-24")
-
- 
-
- 
-
+## Remove any interview date intake, 6-month, disharge after this date
+SPARS_data = subset(SPARS_data, SPARS_data$InterviewDate < "2020-04-01")
+SPARS_data$InterviewType_07 = as.numeric(SPARS_data$InterviewType_07)
+dim(SPARS_data)
 SPARS_base = subset(SPARS_data, SPARS_data$InterviewType_07 == 1)
+dim(SPARS_base)
+
+describe.factor(SPARS_data$InterviewType_07)
 
 SPARS_month6 = subset(SPARS_data, SPARS_data$InterviewType_07 == 3)
 
 dim(SPARS_month6)
 
-dim(SPARS_base)
 
+write.csv(SPARS_base, "SPARS_base.csv", row.names = FALSE)
  
 
 SPARS_wide = merge(SPARS_base, SPARS_month6, by = "ConsumerID", all.y = TRUE)
@@ -124,7 +120,7 @@ dim(base_redcap)
 
 #CHANGE DATE to correct year and stuff
 
-base_redcap = subset(redcap_date_base, InterviewDate < "2020-02-24")
+base_redcap = subset(redcap_date_base, InterviewDate < "2020-04-01")
 
 dim(base_redcap)
 
@@ -571,7 +567,6 @@ Obj. E: Reduce past 30-day involvement with the criminal justice system (e.g., a
 Use variable "NumTimesArrested" from SPARS
 
 ```{r}
-
 base_arrests = SPARS_wide$NumTimesArrested.x
 
 base_arrests = na.omit(base_arrests)
@@ -786,10 +781,12 @@ Use "did you receive help getting a job" question from REDCap?
 Most people say "no" to this, so I'm not sure if employment typically isnt a main concern for our clients or what
 
 ```{r}
+head(redcap_data)
 
-month6_job_help = redcap_data$did_you_receive_help_getti
+month6_job_help = data.frame(need_help_job = redcap_data$did_you_receive_help_getti, get_help_job = redcap_data$job_help)
 
 month6_job_help = na.omit(month6_job_help)
+month6_job_help
 
 sum_month6_job_help = sum(month6_job_help)
 
@@ -1317,7 +1314,7 @@ Accomplish = data.frame(x = SPARS_wide$GenerallyAccomplishGoal.x, y = SPARS_wide
 
 Accomplish  = na.omit(Accomplish)
 
-dim(Accomplish )
+dim(Accomplish)
 
  
 
@@ -1368,6 +1365,35 @@ Independent_p_change = round((IndependentMonth3Mean -IndependentBaseMean)/ Indep
 Independent_results = data.frame(N = dim(Independent)[1], IndependentBaseMean, IndependentMonth3Mean, Independent_p_change)
 
 Independent_results
+```
+Goal V 
+Demos and top diagnoses
+59 = F33 – Major depressive disorder, recurrent
+
+62 = F40-F48 – Anxiety, dissociative, stress-related, somatoform and other nonpsychotic mental disorders 
+
+57 = F31 – Bipolar disorder
+
+1 = MALE
+2 = FEMALE
+3 = TRANSGENDER
+4 = OTHER (SPECIFY)
+
+11 = LESS THAN 12TH GRADE
+12 = 12TH GRADE /HIGH SCHOOL DIPLOMA/ EQUIVALENT (GED)
+13 = VOC/TECH DIPLOMA
+14 = SOME COLLEGE OR UNIVERSITY
+15 = BACHELOR'S DEGREE (BA, BS)
+16 = GRADUATE WORK/GRADUATE DEGREE
+
+```{r}
+describe.factor(SPARS_base$Gender)
+describe.factor(SPARS_base$DiagnosisOne)
+
+describe.factor(SPARS_base$Education)
+37.00+16
+46.25+20
+
 ```
 
 
