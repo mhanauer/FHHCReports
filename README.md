@@ -243,11 +243,11 @@ month6_redcap_anxiety$Gad_7_Total = rowSums(month6_redcap_anxiety)
 
 
 anx_results = data.frame(dep_mean_base_redcap = mean(base_redcap_anxiety$Gad_7_Total), dep_mean_month6_redcapmean = mean(month6_redcap_anxiety$Gad_7_Total), n = dim(base_redcap_anxiety)[1], pchange_anx = (mean(month6_redcap_anxiety$Gad_7_Total-mean(base_redcap_anxiety$Gad_7_Total))/mean(base_redcap_anxiety$Gad_7_Total)))
-anx_results
+round(anx_results,3)
  
 
 phq_results = data.frame(mean_phq_base = mean(base_redcap_depression$PHQ_9_Total), mean_phq_month6 = mean(month6_redcap_depression$PHQ_9_Total), p_change_phq , n = dim(base_redcap_depression)[1])
-phq_results
+round(phq_results,3)
 
 
 ```
@@ -287,7 +287,7 @@ Cannabis_Use
 #TOBACCO USE at BASELINE
 
  
-
+dim(SPARS_wide)
 describe.factor(SPARS_wide$Tobacco_Use.x)
 
 
@@ -358,7 +358,7 @@ sub_month_6_mean
 p_change_sub = (sub_month_6_mean-sub_base_mean)/sub_base_mean
 p_change_sub
 
-sub_results = data.frame(sub_base_mean, sub_month_6_mean , p_change_sub)
+sub_results = data.frame(sub_base_mean, sub_month_6_mean , p_change_sub, n = dim(SPARS_wide)[1])
 sub_results
 ```
 
@@ -435,7 +435,7 @@ p_change_plc
 
 plc_results = data.frame(plc_base = mean(base_redcap_plc$Plc_Total), plc_month6 = mean(month6_redcap_plc$Plc_Total), p_change = p_change_plc)
 
-plc_results
+round(plc_results,3)
 
 ```
 
@@ -447,12 +447,15 @@ emergency room visits, etc.) by 50%.
 
 Use ER usage and Hospitalizations
 
+Because you are summing you can using all the pre and post data so the N is the N is the matched dataset.
+
 ```{r}
 
 #ER Visits
 
 SPARS_wide_ER = data.frame(base_redcap_ER = SPARS_wide$TimesER.x, month6_redcap_ER = SPARS_wide$TimesER.y)
 
+dim(SPARS_wide)
 SPARS_wide_ER_complete = na.omit(SPARS_wide_ER)
 
 #number of people
@@ -542,7 +545,7 @@ ER_hosp = data.frame(base_ER_hosp = base_redcap_er_hosp, month6_ER_hosp = month6
 ER_hosp
 
 
-er_results = data.frame(base_er = sum(SPARS_wide_ER$base_redcap_ER), month_6_er = sum(SPARS_wide_ER$month6_redcap_ER), p_change_er = (sum(SPARS_wide_ER$month6_redcap_ER)-sum(SPARS_wide_ER$base_redcap_ER))/sum(SPARS_wide_ER$base_redcap_ER))
+er_results = data.frame(base_er = sum(SPARS_wide_ER$base_redcap_ER), month_6_er = sum(SPARS_wide_ER$month6_redcap_ER), p_change_er = (sum(SPARS_wide_ER$month6_redcap_ER)-sum(SPARS_wide_ER$base_redcap_ER))/sum(SPARS_wide_ER$base_redcap_ER), n = dim(SPARS_wide)[1])
 
 er_results
 
@@ -550,7 +553,7 @@ er_results
 hosp_results = data.frame(hosp_base = sum(SPARS_wide_hospital$base_redcap_Hosp), hosp_month6 = sum(SPARS_wide_hospital$month6_redcap_Hosp), p_change_hosp = (sum(SPARS_wide_hospital$month6_redcap_Hosp)-sum(SPARS_wide_hospital$base_redcap_Hosp))/sum(SPARS_wide_hospital$base_redcap_Hosp))
 hosp_results
 
-ER_hosp = data.frame(base_ER_hosp = base_redcap_er_hosp, month6_ER_hosp = month6_redcap_er_hosp, percentchange = p_change_ER_hosp)
+ER_hosp = data.frame(base_ER_hosp = base_redcap_er_hosp, month6_ER_hosp = month6_redcap_er_hosp, percentchange = p_change_ER_hosp, n = dim(SPARS_wide)[1])
 
 ER_hosp
 
@@ -731,7 +734,7 @@ p_change_barc
 
 barc = data.frame(base_barc = mean_base_barc, month6_barc = mean_month6_barc, p_change_barc = p_change_barc)
 
-barc
+round(barc,3)
 ```
 
  
@@ -784,14 +787,17 @@ Most people say "no" to this, so I'm not sure if employment typically isnt a mai
 head(redcap_data)
 
 month6_job_help = data.frame(need_help_job = redcap_data$did_you_receive_help_getti, get_help_job = redcap_data$job_help)
-
-month6_job_help = na.omit(month6_job_help)
 month6_job_help
 
-sum_month6_job_help = sum(month6_job_help)
+month6_job_help = na.omit(month6_job_help)
+month6_job_help = subset(month6_job_help, need_help_job == 1)
 
-sum_month6_job_help
+need_job_help = dim(month6_job_help)[1]
 
+received_job_help = sum(month6_job_help$get_help_job)
+
+objC_results = data.frame(need_job_help, received_job_help, percent = round(received_job_help / need_job_help,3))
+objC_results
 ```
 
  
