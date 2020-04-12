@@ -1440,6 +1440,36 @@ sd(age)
 46.25+20
 
 ```
+Number of people with insurance
+Copy the data from the insurance tab.  Then delete the year lines.
+unknown means missing.
+Include only those who have entered the program within the last 6 months.
+
+1. Client did not lose insurance from enrollment to the quarter check
+2. If client did not have insurance at intake, but did at the quarter check
+```{r}
+library(lubridate)
+setwd("S:/Indiana Research & Evaluation/FHHC Homelessness/Data and QPR")
+fhhc_insurance_y2_q2 = read.csv("fhhc_insurance_y2_q2.csv", header = TRUE)
+
+### subset for those clients who have been in the program for at least six months
+fhhc_insurance_y2_q2$Enrollment.Date = mdy(fhhc_insurance_y2_q2$Enrollment.Date)
+fhhc_insurance_y2_q2$Enrollment.Date
+fhhc_insurance_y2_q2 = subset(fhhc_insurance_y2_q2, Enrollment.Date < "2019-10-01")
+dim(fhhc_insurance_y2_q2)
+
+fhhc_insurance_y2_q2$not_lose_insurance = ifelse(fhhc_insurance_y2_q2$Insurance.at.enrollment.bin && fhhc_insurance_y2_q2$Insurance.Y.N.at.6.months == 1, 1, 0)
 
 
+## Check
+fhhc_insurance_y2_q2_check = fhhc_insurance_y2_q2[c("Insurance.at.enrollment.bin", "Insurance.Y.N.at.6.months", "not_lose_insurance")]
+fhhc_insurance_y2_q2_check
+
+fhhc_insurance_y2_q2$mro_improve = ifelse(fhhc_insurance_y2_q2$MRO.at.Enrollment == 0 && fhhc_insurance_y2_q2$MRO.Y.N.at.6.months == 1, 1,0)
+describe.factor(fhhc_insurance_y2_q2$mro_improve)
+fhhc_insurance_y2_q2
+
+54/60
+
+```
 
