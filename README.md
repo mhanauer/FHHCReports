@@ -70,7 +70,7 @@ dim(SPARS_data)
 
  
 ## Remove any interview date intake, 6-month, disharge after this date
-SPARS_data = subset(SPARS_data, SPARS_data$InterviewDate < "2020-04-01")
+SPARS_data = subset(SPARS_data, SPARS_data$InterviewDate < "2020-07-01")
 SPARS_data$InterviewType_07 = as.numeric(SPARS_data$InterviewType_07)
 dim(SPARS_data)
 SPARS_base = subset(SPARS_data, SPARS_data$InterviewType_07 == 1)
@@ -89,7 +89,6 @@ write.csv(SPARS_base, "SPARS_base.csv", row.names = FALSE)
 SPARS_wide = merge(SPARS_base, SPARS_month6, by = "ConsumerID", all.y = TRUE)
 
 dim(SPARS_wide)
-
 SPARS_wide$ConsumerID == SPARS_month6$ConsumerID
 
 
@@ -120,7 +119,7 @@ dim(base_redcap)
 
 #CHANGE DATE to correct year and stuff
 
-base_redcap = subset(redcap_date_base, InterviewDate < "2020-04-01")
+base_redcap = subset(redcap_date_base, InterviewDate < "2020-07-01")
 
 dim(base_redcap)
 
@@ -162,7 +161,7 @@ dim(base_redcap_depression)
 
 sum(is.na(base_redcap_depression))
 
-base_redcap_depression$PHQ_9_Total = rowSums(base_redcap_depression)
+base_redcap_depression$PHQ_9_Total = apply(base_redcap_depression, 1, sum, na.rm = TRUE)
 
 mean(base_redcap_depression$PHQ_9_Total)
 
@@ -180,7 +179,7 @@ dim(month6_redcap_depression)
 
 sum(is.na(month6_redcap_depression))
 
-month6_redcap_depression$PHQ_9_Total = rowSums(month6_redcap_depression)
+month6_redcap_depression$PHQ_9_Total = apply(month6_redcap_depression, 1, sum, na.rm = TRUE)
 
 mean(month6_redcap_depression$PHQ_9_Total)
 
@@ -215,7 +214,7 @@ sum(is.na(base_redcap_anxiety))
 
 #base_redcapline mean score
 
-base_redcap_anxiety$Gad_7_Total = rowSums(base_redcap_anxiety)
+base_redcap_anxiety$Gad_7_Total = apply(base_redcap_anxiety, 1, sum, na.rm = TRUE)
 
 mean(base_redcap_anxiety$Gad_7_Total)
 
@@ -239,7 +238,7 @@ sum(is.na(month6_redcap_anxiety))
 
 #follow-up mean score
 
-month6_redcap_anxiety$Gad_7_Total = rowSums(month6_redcap_anxiety)
+month6_redcap_anxiety$Gad_7_Total = apply(month6_redcap_anxiety, 1, sum, na.rm = TRUE)
 
 
 anx_results = data.frame(dep_mean_base_redcap = mean(base_redcap_anxiety$Gad_7_Total), dep_mean_month6_redcapmean = mean(month6_redcap_anxiety$Gad_7_Total), n = dim(base_redcap_anxiety)[1], pchange_anx = (mean(month6_redcap_anxiety$Gad_7_Total-mean(base_redcap_anxiety$Gad_7_Total))/mean(base_redcap_anxiety$Gad_7_Total)))
@@ -391,7 +390,7 @@ sum(is.na(base_redcap_plc))
 
 #base_redcapline mean score
 
-base_redcap_plc$Plc_Total = rowSums(base_redcap_plc)
+base_redcap_plc$Plc_Total = apply(base_redcap_plc, 1, sum, na.rm = TRUE)
 
 mean(base_redcap_plc$Plc_Total)
 
@@ -415,7 +414,7 @@ sum(is.na(month6_redcap_plc))
 
 #follow-up mean score
 
-month6_redcap_plc$Plc_Total = rowSums(month6_redcap_plc)
+month6_redcap_plc$Plc_Total = apply(month6_redcap_plc, 1, sum, na.rm = TRUE)
 
 mean(month6_redcap_plc$Plc_Total)
 
@@ -762,7 +761,7 @@ Use variable "Svc_Housing" from SPARS (asks about housing services since last NO
  
 
 describe.factor(SPARS_wide$Svc_Housing.y)
-
+61/93
  
 ```
 
@@ -1436,8 +1435,8 @@ SPARS_base$DOB = mdy(SPARS_base$DOB)
 age =  (SPARS_base$InterviewDate - SPARS_base$DOB ) /365
 mean(age) 
 sd(age)
-37.00+16
-46.25+20
+
+ 44.08602+22.58065
 
 ```
 Number of people with insurance
